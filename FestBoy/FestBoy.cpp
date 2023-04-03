@@ -1,12 +1,8 @@
-﻿// FestBoy.cpp : Defines the entry point for the application.
-//
+﻿#include <iostream>
+#include <SDL.h>
 
-#include "FestBoy.h"
-
-using namespace std;
-
-int main()
+int main(int argc, char* argv[])
 {
-	cout << "Hello CMake." << endl;
+	std::cout << "Hello CMake." << std::endl;
 	return 0;
 }
