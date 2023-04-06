@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Hello CMake." << std::endl;
+    std::cout << "Hello CMake." << std::endl;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
