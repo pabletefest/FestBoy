@@ -3,11 +3,13 @@
 
 namespace gb
 {
+    class GBConsole;
+
     // The GameBoy CPU called SM83
     class SM83CPU
     {
     public:
-        SM83CPU();
+        explicit SM83CPU(GBConsole* device);
         ~SM83CPU() = default;
 
         auto read8(const u16& address) -> u8;
@@ -16,7 +18,9 @@ namespace gb
         auto write8(const u16& address, const u8& data) -> void;
         auto write16(const u16& address, const u16& data) -> void;
 
-    public:
+    private:
+        GBConsole* system = nullptr;
+
         struct Registers
         {
             union
