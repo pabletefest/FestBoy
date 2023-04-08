@@ -303,16 +303,20 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x7F:
         break;
     case 0xC1:
+        POP(this, regs.BC);
         break;
     case 0xC5:
+        PUSH(this, regs.BC);
         break;
     case 0xCB:
         //u8 cbOpcode = read8(regs.PC++);
         decodeAndExecuteCBInstruction(read8(regs.PC++));
         break;
     case 0xD1:
+        POP(this, regs.DE);
         break;
     case 0xD5:
+        PUSH(this, regs.DE);
         break;
     case 0xE0:
         {
@@ -321,6 +325,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         }
         break;
     case 0xE1:
+        POP(this, regs.HL);
         break;
     case 0xE2:
         {
@@ -329,6 +334,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         }
         break;
     case 0xE5:
+        PUSH(this, regs.HL);
         break;
     case 0xEA:
         {
@@ -341,11 +347,13 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + read8(regs.PC++)));
         break;
     case 0xF1:
+        POP(this, regs.AF);
         break;
     case 0xF2:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + regs.C));
         break;
     case 0xF5:
+        PUSH(this, regs.AF);
         break;
     case 0xF9:
         LD<REGISTER, REGISTER, u16>(this, regs.SP, regs.HL);
