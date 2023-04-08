@@ -18,16 +18,39 @@ namespace gb
         auto write8(const u16& address, const u8& data) -> void;
         auto write16(const u16& address, const u16& data) -> void;
 
+        auto reset() -> void;
+        auto clock() -> void;
+
+    private:
+        auto decodeAndExecuteInstruction(u8 opcode) -> void;
+        auto decodeAndExecuteCBInstruction(u8 cbOpcode) -> void;
+
     private:
         GBConsole* system = nullptr;
+        u8 instructionCycles = 0;
+        u64 cpuCyclesElapsed = 0;
 
+    public:
         struct Registers
         {
             union
             {
                 struct
                 {
-                    u8 F;
+                    union
+                    {
+                        struct
+                        {
+                            u8 unused : 4;
+                            u8 C : 1;
+                            u8 H : 1;
+                            u8 N : 1;
+                            u8 Z : 1;
+                        }flags;
+
+                        u8 F;
+                    };
+
                     u8 A;
                 };
 

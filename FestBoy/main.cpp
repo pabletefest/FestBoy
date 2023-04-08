@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "instructions.h"
+#include "gb.h"
 #include "cpuSM83.h"
 
 #include <iostream>
@@ -7,6 +8,9 @@
 
 int main(int argc, char* argv[])
 {
+    gb::GBConsole emulator;
+    gb::SM83CPU cpu = gb::SM83CPU(&emulator);
+
     std::cout << "Hello CMake." << std::endl;
 
     SDL_Window* window;

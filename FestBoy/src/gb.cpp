@@ -39,3 +39,21 @@ auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
     internalRAM[address] = static_cast<u8>(data & 0x00FF);
     internalRAM[address + 1] = static_cast<u8>((data >> 8) & 0x00FF);
 }
+
+auto gb::GBConsole::reset() -> void
+{
+    cpu.reset();
+}
+
+auto gb::GBConsole::clock() -> void
+{
+    cpu.clock();
+
+    systemCyclesElapsed++;
+}
+
+auto gb::GBConsole::step(u64 numberCycles) -> void
+{
+    for (size_t i = 0; i < numberCycles; i++)
+        clock();
+}

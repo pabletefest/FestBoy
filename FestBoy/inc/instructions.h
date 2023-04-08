@@ -1,5 +1,6 @@
 #include "cpuSM83.h"
-#include <assert.h>
+
+#include <cassert>
 
 enum OperandsType
 {
@@ -26,4 +27,22 @@ constexpr auto LD(gb::SM83CPU* cpu, Operand& dst, const Operand& src) -> void
         (std::is_same_v<Operand, u16>) ? cpu->write16(dst, value) : cpu->write8(dst, static_cast<u8>(value));
     else
         assert(false && "Error in LD opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+}
+
+auto PUSH(gb::SM83CPU* cpu, const u16& src) -> void
+{
+    // cpu->SP -= 2;
+    // cpu->write16(cpu->SP, src);
+
+    cpu->write8(--cpu->regs.SP, (src >> 8) & 0x00FF);
+    cpu->write8(--cpu->regs.SP, src & 0x00FF);
+}
+
+auto POP(gb::SM83CPU* cpu, u16& dst) -> void
+{
+    // cpu->read16(cpu->SP, dst);
+    // cpu->SP += 2;
+
+    dst = cpu->read8(cpu->regs.SP++) & 0x00FF;
+    dst |= (static_cast<u16>(cpu->read8(cpu->regs.SP++)) << 8) & 0xFF00;
 }
