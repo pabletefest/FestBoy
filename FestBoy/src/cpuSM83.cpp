@@ -48,58 +48,76 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     switch (opcode)
     {
     case 0x01:
-        u16 value = read16(regs.PC);
+        LD<REGISTER, IMMEDIATE, u16>(this, regs.BC, read16(regs.PC));
         regs.PC += 2;
-        LD<REGISTER, IMMEDIATE, u16>(this, regs.BC, value);
         break;
     case 0x02:
+        LD<ADDRESS_PTR, REGISTER, u16>(this, regs.BC, regs.A);
         break;
     case 0x06:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.B, read8(regs.PC++));
         break;
     case 0x08:
+        u16 address = read16(regs.PC);
+        LD<ADDRESS_PTR, REGISTER, u16>(this, address, regs.SP);
+        regs.PC += 2;
         break;
     case 0x0A:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC));
         break;
     case 0x0E:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.C, read8(regs.PC++));
         break;
     case 0x11:
-        u16 value = read16(regs.PC);
+        LD<REGISTER, IMMEDIATE, u16>(this, regs.DE, read16(regs.PC));
         regs.PC += 2;
-        LD<REGISTER, IMMEDIATE, u16>(this, regs.DE, value);
         break;
     case 0x12:
+        LD<ADDRESS_PTR, REGISTER, u16>(this, regs.DE, regs.A);
         break;
     case 0x16:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.D, read8(regs.PC++));
         break;
     case 0x1A:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.DE));
         break;
     case 0x1E:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.E, read8(regs.PC++));
         break;
     case 0x21:
-        u16 value = read16(regs.PC);
+        LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
         regs.PC += 2;
-        LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, value);
         break;
     case 0x22:
+        LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
+        regs.HL++;
         break;
     case 0x26:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.H, read8(regs.PC++));
         break;
     case 0x2A:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.HL++));
         break;
     case 0x2E:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.L, read8(regs.PC++));
         break;
     case 0x31:
-        u16 value = read16(regs.PC);
+        LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
         regs.PC += 2;
-        LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, value);
         break;
     case 0x32:
+        LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
+        regs.HL--;
         break;
     case 0x36:
+        u16 address = read16(regs.HL);
+        LD<ADDRESS_PTR, IMMEDIATE, u16>(this, address, read8(regs.PC++));
         break;
     case 0x3A:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC--));
         break;
     case 0x3E:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC++));
         break;
     case 0x40:
         break;
@@ -232,8 +250,8 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xC5:
         break;
     case 0xCB:
-        u8 cbOpcode = read8(regs.PC++);
-        decodeAndExecuteCBInstruction(cbOpcode);
+        //u8 cbOpcode = read8(regs.PC++);
+        decodeAndExecuteCBInstruction(read8(regs.PC++));
         break;
     case 0xD1:
         break;
