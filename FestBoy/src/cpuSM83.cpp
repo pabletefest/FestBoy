@@ -54,6 +54,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x02:
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.BC, regs.A);
         break;
+    case 0x03:
+        INC<REGISTER, u16>(this, regs.BC);
+        break;
+    case 0x04:
+        INC<REGISTER, u8>(this, regs.B);
+        break;
+    case 0x05:
+        DEC<REGISTER, u8>(this, regs.B);
+        break;
     case 0x06:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.B, read8(regs.PC++));
         break;
@@ -70,6 +79,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x0A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC));
         break;
+    case 0x0B:
+        DEC<REGISTER, u16>(this, regs.BC);
+        break;
+    case 0x0C:
+        INC<REGISTER, u8>(this, regs.C);
+        break;
+    case 0x0D:
+        DEC<REGISTER, u8>(this, regs.C);
+        break;
     case 0x0E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.C, read8(regs.PC++));
         break;
@@ -80,6 +98,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x12:
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.DE, regs.A);
         break;
+    case 0x13:
+        INC<REGISTER, u16>(this, regs.DE);
+        break;
+    case 0x14:
+        INC<REGISTER, u8>(this, regs.D);
+        break;
+    case 0x15:
+        DEC<REGISTER, u8>(this, regs.D);
+        break;
     case 0x16:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.D, read8(regs.PC++));
         break;
@@ -88,6 +115,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x1A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.DE));
+        break;
+    case 0x1B:
+        DEC<REGISTER, u16>(this, regs.DE);
+        break;
+    case 0x1C:
+        INC<REGISTER, u8>(this, regs.E);
+        break;
+    case 0x1D:
+        DEC<REGISTER, u8>(this, regs.E);
         break;
     case 0x1E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.E, read8(regs.PC++));
@@ -100,6 +136,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
         regs.HL++;
         break;
+    case 0x23:
+        INC<REGISTER, u16>(this, regs.HL);
+        break;
+    case 0x24:
+        INC<REGISTER, u8>(this, regs.H);
+        break;
+    case 0x25:
+        DEC<REGISTER, u8>(this, regs.H);
+        break;
     case 0x26:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.H, read8(regs.PC++));
         break;
@@ -108,6 +153,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x2A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.HL++));
+        break;
+    case 0x2B:
+        DEC<REGISTER, u16>(this, regs.HL);
+        break;
+    case 0x2C:
+        INC<REGISTER, u8>(this, regs.L);
+        break;
+    case 0x2D:
+        DEC<REGISTER, u8>(this, regs.L);
         break;
     case 0x2E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.L, read8(regs.PC++));
@@ -120,6 +174,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
         regs.HL--;
         break;
+    case 0x33:
+        INC<REGISTER, u16>(this, regs.SP);
+        break;
+    case 0x34:
+        INC<ADDRESS_PTR, u16>(this, regs.HL);
+        break;
+    case 0x35:
+        DEC<ADDRESS_PTR, u16>(this, regs.HL);
+        break;
     case 0x36:
         LD<ADDRESS_PTR, IMMEDIATE, u16>(this, regs.HL, read8(regs.PC++));
         break;
@@ -128,6 +191,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x3A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC--));
+        break;
+    case 0x3B:
+        DEC<REGISTER, u16>(this, regs.SP);
+        break;
+    case 0x3C:
+        INC<REGISTER, u8>(this, regs.A);
+        break;
+    case 0x3D:
+        DEC<REGISTER, u8>(this, regs.A);
         break;
     case 0x3E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC++));

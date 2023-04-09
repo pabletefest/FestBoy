@@ -181,3 +181,49 @@ auto CP(gb::SM83CPU* cpu, const Operand& src) -> void
     cpu->setFlag(gb::H, result & 0x0001);
     cpu->setFlag(gb::C, result & 0x0080);
 }
+
+template<OperandsType SRC_TYPE, typename Operand>
+auto INC(gb::SM83CPU* cpu, Operand& src) -> void
+{
+    u16 result = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>))
+    {
+        src += 1;
+        result = src;
+    }
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+    {
+        result = cpu->read8(src) + 1;
+        cpu->write8(src, result);
+    }
+    else
+        assert(false && "Error in INC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary/immediate variable");
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, result & 0x0001);
+}
+
+template<OperandsType SRC_TYPE, typename Operand>
+auto DEC(gb::SM83CPU* cpu, Operand& src) -> void
+{
+    u16 result = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>))
+    {
+        src -= 1;
+        result = src;
+    }
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+    {
+        result = cpu->read8(src) - 1;
+        cpu->write8(src, result);
+    }
+    else
+        assert(false && "Error in DEC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary/immediate variable");
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 1);
+    cpu->setFlag(gb::H, result & 0x0001);
+}
