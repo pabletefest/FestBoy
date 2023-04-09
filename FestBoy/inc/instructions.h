@@ -9,6 +9,13 @@ enum OperandsType
     IMMEDIATE
 };
 
+enum BitwiseOperation
+{
+    AND,
+    XOR,
+    OR
+};
+
 template<OperandsType DST_TYPE, OperandsType SRC_TYPE, typename Operand>
 constexpr auto LD(gb::SM83CPU* cpu, Operand& dst, const Operand& src) -> void
 {
@@ -60,7 +67,7 @@ auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> voi
         assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
 
     result += cpu->regs.A + ((addCarryBit) ? cpu->regs.flags.C : 0);
-    cpu->regs.A = result;
+    cpu->regs.A = result & 0x00FF;
 
     cpu->setFlag(gb::Z, result == 0);
     cpu->setFlag(gb::N, 0);
@@ -109,13 +116,48 @@ auto SUBC(gb::SM83CPU* cpu, const Operand& src, bool subCarryBit = false) -> voi
     else if constexpr (SRC_TYPE == ADDRESS_PTR)
         operand = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
     else
-        assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+        assert(false && "Error in SUB/SBD opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
 
     result = cpu->regs.A - operand - ((subCarryBit) ? cpu->regs.flags.C : 0);
-    cpu->regs.A = result;
+    cpu->regs.A = result & 0x00FF;
 
     cpu->setFlag(gb::Z, result == 0);
     cpu->setFlag(gb::N, 1);
     cpu->setFlag(gb::H, result & 0x0001);
     cpu->setFlag(gb::C, result & 0x0080);
+}
+
+template<BitwiseOperation OP_TYPE, OperandsType SRC_TYPE, typename Operand>
+auto BITWISE_OP(gb::SM83CPU* cpu, const Operand& src) -> void
+{
+    u16 operand = 0;
+    u16 result = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || SRC_TYPE == IMMEDIATE)
+        operand = (std::is_same_v<Operand, u16>) ? src : static_cast<u8>(src) & 0x00FF;
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+        operand = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
+    else
+        assert(false && "Error in AND/XOR/OR opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+
+    if constexpr (OP_TYPE == AND)
+        result = cpu->regs.A & operand;
+    else if constexpr (OP_TYPE == XOR)
+        result = cpu->regs.A ^ operand;
+    else if constexpr (OP_TYPE == OR)
+        result = cpu->regs.A | operand;
+    else
+        assert(false && "Error in AND/XOR/OR opcode: specify a valid bitwise operation!");
+
+    cpu->regs.A = result;
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 0);
+
+    if constexpr (OP_TYPE == AND)
+        cpu->setFlag(gb::H, 1);
+    else
+        cpu->setFlag(gb::H, 0);
+
+    cpu->setFlag(gb::C, 0);
 }

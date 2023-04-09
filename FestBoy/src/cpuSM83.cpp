@@ -417,6 +417,94 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x9F:
         SUBC<REGISTER, u8>(this, regs.A, true);
         break;
+    case 0xA0:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.B);
+        break;
+    case 0xA1:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.C);
+        break;
+    case 0xA2:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.D);
+        break;
+    case 0xA3:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.E);
+        break;
+    case 0xA4:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.H);
+        break;
+    case 0xA5:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.L);
+        break;
+    case 0xA6:
+        BITWISE_OP<AND, ADDRESS_PTR, u16>(this, regs.HL);
+        break;
+    case 0xA7:
+        BITWISE_OP<AND, REGISTER, u8>(this, regs.A);
+        break;
+    case 0xA8:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.B);
+        break;
+    case 0xA9:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.C);
+        break;
+    case 0xAA:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.D);
+        break;
+    case 0xAB:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.E);
+        break;
+    case 0xAC:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.H);
+        break;
+    case 0xAD:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.L);
+        break;
+    case 0xAE:
+        BITWISE_OP<XOR, IMMEDIATE, u16>(this, regs.HL);
+        break;
+    case 0xAF:
+        BITWISE_OP<XOR, REGISTER, u8>(this, regs.A);
+        break;
+    case 0xB0:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.B);
+        break;
+    case 0xB1:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.C);
+        break;
+    case 0xB2:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.D);
+        break;
+    case 0xB3:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.E);
+        break;
+    case 0xB4:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.H);
+        break;
+    case 0xB5:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.L);
+        break;
+    case 0xB6:
+        BITWISE_OP<OR, IMMEDIATE, u16>(this, regs.HL);
+        break;
+    case 0xB7:
+        BITWISE_OP<OR, REGISTER, u8>(this, regs.A);
+        break;
+    case 0xB8:
+        break;
+    case 0xB9:
+        break;
+    case 0xBA:
+        break;
+    case 0xBB:
+        break;
+    case 0xBC:
+        break;
+    case 0xBD:
+        break;
+    case 0xBE:
+        break;
+    case 0xBF:
+        break;
     case 0xC1:
         POP(this, regs.BC);
         break;
@@ -442,7 +530,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xD6:
         SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), false);
         break;
-    case 0xDA:
+    case 0xDE:
         SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), true);
         break;
     case 0xE0:
