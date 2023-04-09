@@ -64,6 +64,36 @@ auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> voi
 
     cpu->setFlag(gb::Z, result == 0);
     cpu->setFlag(gb::N, 0);
-    cpu->setFlag(gb::H, result & 0x01);
-    cpu->setFlag(gb::C, result & 0x80);
+    cpu->setFlag(gb::H, result & 0x0001);
+    cpu->setFlag(gb::C, result & 0x0080);
+}
+
+auto ADD_SPi8(gb::SM83CPU* cpu, const s8& immediate) -> void
+{
+    cpu->regs.SP += immediate;
+
+    cpu->setFlag(gb::Z, 0);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, cpu->regs.SP & 0x0001);
+    cpu->setFlag(gb::C, cpu->regs.SP & 0x0080);
+}
+
+auto LD_HLSPi8(gb::SM83CPU* cpu, const s8& immediate) -> void
+{
+    cpu->regs.HL = cpu->regs.SP + immediate;
+
+    cpu->setFlag(gb::Z, 0);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, cpu->regs.HL & 0x0001);
+    cpu->setFlag(gb::C, cpu->regs.HL & 0x0080);
+}
+
+auto ADD_HLrr(gb::SM83CPU* cpu, const u16& reg) -> void
+{
+    cpu->regs.HL += reg;
+
+    //cpu->setFlag(gb::Z, 0);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, cpu->regs.HL & 0x0001);
+    cpu->setFlag(gb::C, cpu->regs.HL & 0x0080);
 }

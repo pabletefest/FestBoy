@@ -64,6 +64,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
             regs.PC += 2;
         }
         break;
+    case 0x09:
+        ADD_HLrr(this, regs.BC);
+        break;
     case 0x0A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC));
         break;
@@ -79,6 +82,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x16:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.D, read8(regs.PC++));
+        break;
+    case 0x19:
+        ADD_HLrr(this, regs.DE);
         break;
     case 0x1A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.DE));
@@ -97,6 +103,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x26:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.H, read8(regs.PC++));
         break;
+    case 0x29:
+        ADD_HLrr(this, regs.HL);
+        break;
     case 0x2A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.HL++));
         break;
@@ -113,6 +122,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x36:
         LD<ADDRESS_PTR, IMMEDIATE, u16>(this, regs.HL, read8(regs.PC++));
+        break;
+    case 0x39:
+        ADD_HLrr(this, regs.SP);
         break;
     case 0x3A:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC--));
@@ -259,7 +271,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<REGISTER, REGISTER, u8>(this, regs.L, regs.L);
         break;
     case 0x6E:
-        LD<REGISTER, REGISTER, u8>(this, regs.L, read8(regs.HL));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.L, read8(regs.HL));
         break;
     case 0x6F:
         LD<REGISTER, REGISTER, u8>(this, regs.L, regs.A);
@@ -283,24 +295,79 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.L);
         break;
     case 0x77:
-        break;
-    case 0x78:
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
         break;
+    case 0x78:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.B);
+        break;
     case 0x79:
-        LD<REGISTER, REGISTER, u8>(this, regs.L, regs.A);
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.C);
         break;
     case 0x7A:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.D);
         break;
     case 0x7B:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.E);
         break;
     case 0x7C:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.H);
         break;
     case 0x7D:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.L);
         break;
     case 0x7E:
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.HL));
         break;
     case 0x7F:
+        LD<REGISTER, REGISTER, u8>(this, regs.A, regs.A);
+        break;
+    case 0x80:
+        ADDC<REGISTER, u8>(this, regs.B, false);
+        break;
+    case 0x81:
+        ADDC<REGISTER, u8>(this, regs.C, false);
+        break;
+    case 0x82:
+        ADDC<REGISTER, u8>(this, regs.D, false);
+        break;
+    case 0x83:
+        ADDC<REGISTER, u8>(this, regs.E, false);
+        break;
+    case 0x84:
+        ADDC<REGISTER, u8>(this, regs.H, false);
+        break;
+    case 0x85:
+        ADDC<REGISTER, u8>(this, regs.L, false);
+        break;
+    case 0x86:
+        ADDC<IMMEDIATE, u8>(this, read8(regs.HL), false);
+        break;
+    case 0x87:
+        ADDC<REGISTER, u8>(this, regs.A, false);
+        break;
+    case 0x88:
+        ADDC<REGISTER, u8>(this, regs.B, true);
+        break;
+    case 0x89:
+        ADDC<REGISTER, u8>(this, regs.C, true);
+        break;
+    case 0x8A:
+        ADDC<REGISTER, u8>(this, regs.D, true);
+        break;
+    case 0x8B:
+        ADDC<REGISTER, u8>(this, regs.E, true);
+        break;
+    case 0x8C:
+        ADDC<REGISTER, u8>(this, regs.H, true);
+        break;
+    case 0x8D:
+        ADDC<REGISTER, u8>(this, regs.L, true);
+        break;
+    case 0x8E:
+        ADDC<IMMEDIATE, u8>(this, read8(regs.HL), true);
+        break;
+    case 0x8F:
+        ADDC<REGISTER, u8>(this, regs.A, true);
         break;
     case 0xC1:
         POP(this, regs.BC);
@@ -308,9 +375,15 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xC5:
         PUSH(this, regs.BC);
         break;
+    case 0xC6:
+        ADDC<IMMEDIATE, u8>(this, read8(regs.PC++), false);
+        break;
     case 0xCB:
         //u8 cbOpcode = read8(regs.PC++);
         decodeAndExecuteCBInstruction(read8(regs.PC++));
+        break;
+    case 0xCE:
+        ADDC<IMMEDIATE, u8>(this, read8(regs.PC++), true);
         break;
     case 0xD1:
         POP(this, regs.DE);
@@ -336,6 +409,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xE5:
         PUSH(this, regs.HL);
         break;
+    case 0xE8:
+        ADD_SPi8(this, static_cast<s8>(read8(regs.PC++)));
+        break;
     case 0xEA:
         {
             u16 address = read16(regs.PC);
@@ -355,6 +431,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xF5:
         PUSH(this, regs.AF);
         break;
+    case 0xF8:
+        LD_HLSPi8(this, static_cast<s8>(read8(regs.PC++)));
+        break;
     case 0xF9:
         LD<REGISTER, REGISTER, u16>(this, regs.SP, regs.HL);
         break;
@@ -363,7 +442,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         regs.PC += 2;
         break;
     default:
-        printf("Opcode %02X not implemented", opcode);
+        printf("\nOpcode %02X not implemented.\n", opcode);
         break;
     }
 }
