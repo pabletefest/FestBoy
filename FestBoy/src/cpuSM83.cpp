@@ -369,6 +369,54 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x8F:
         ADDC<REGISTER, u8>(this, regs.A, true);
         break;
+    case 0x90:
+        SUBC<REGISTER, u8>(this, regs.B, false);
+        break;
+    case 0x91:
+        SUBC<REGISTER, u8>(this, regs.C, false);
+        break;
+    case 0x92:
+        SUBC<REGISTER, u8>(this, regs.D, false);
+        break;
+    case 0x93:
+        SUBC<REGISTER, u8>(this, regs.E, false);
+        break;
+    case 0x94:
+        SUBC<REGISTER, u8>(this, regs.H, false);
+        break;
+    case 0x95:
+        SUBC<REGISTER, u8>(this, regs.L, false);
+        break;
+    case 0x96:
+        SUBC<IMMEDIATE, u8>(this, read8(regs.HL), false);
+        break;
+    case 0x97:
+        SUBC<REGISTER, u8>(this, regs.A, false);
+        break;
+    case 0x98:
+        SUBC<REGISTER, u8>(this, regs.B, true);
+        break;
+    case 0x99:
+        SUBC<REGISTER, u8>(this, regs.C, true);
+        break;
+    case 0x9A:
+        SUBC<REGISTER, u8>(this, regs.D, true);
+        break;
+    case 0x9B:
+        SUBC<REGISTER, u8>(this, regs.E, true);
+        break;
+    case 0x9C:
+        SUBC<REGISTER, u8>(this, regs.H, true);
+        break;
+    case 0x9D:
+        SUBC<REGISTER, u8>(this, regs.L, true);
+        break;
+    case 0x9E:
+        SUBC<IMMEDIATE, u8>(this, read8(regs.HL), true);
+        break;
+    case 0x9F:
+        SUBC<REGISTER, u8>(this, regs.A, true);
+        break;
     case 0xC1:
         POP(this, regs.BC);
         break;
@@ -390,6 +438,12 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xD5:
         PUSH(this, regs.DE);
+        break;
+    case 0xD6:
+        SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), false);
+        break;
+    case 0xDA:
+        SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), true);
         break;
     case 0xE0:
         {

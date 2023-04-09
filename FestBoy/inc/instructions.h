@@ -59,7 +59,7 @@ auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> voi
     else
         assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
 
-    result = cpu->regs.A + ((addCarryBit) ? cpu->regs.flags.C : 0);
+    result += cpu->regs.A + ((addCarryBit) ? cpu->regs.flags.C : 0);
     cpu->regs.A = result;
 
     cpu->setFlag(gb::Z, result == 0);
@@ -96,4 +96,26 @@ auto ADD_HLrr(gb::SM83CPU* cpu, const u16& reg) -> void
     cpu->setFlag(gb::N, 0);
     cpu->setFlag(gb::H, cpu->regs.HL & 0x0001);
     cpu->setFlag(gb::C, cpu->regs.HL & 0x0080);
+}
+
+template<OperandsType SRC_TYPE, typename Operand>
+auto SUBC(gb::SM83CPU* cpu, const Operand& src, bool subCarryBit = false) -> void
+{
+    u16 operand = 0;
+    u16 result = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || SRC_TYPE == IMMEDIATE)
+        operand = (std::is_same_v<Operand, u16>) ? src : static_cast<u8>(src) & 0x00FF;
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+        operand = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
+    else
+        assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+
+    result = cpu->regs.A - operand - ((subCarryBit) ? cpu->regs.flags.C : 0);
+    cpu->regs.A = result;
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 1);
+    cpu->setFlag(gb::H, result & 0x0001);
+    cpu->setFlag(gb::C, result & 0x0080);
 }
