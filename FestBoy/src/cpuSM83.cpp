@@ -551,6 +551,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xE5:
         PUSH(this, regs.HL);
         break;
+    case 0xE6:
+        BITWISE_OP<AND, IMMEDIATE, u8>(this, read8(regs.PC++));
+        break;
     case 0xE8:
         ADD_SPi8(this, static_cast<s8>(read8(regs.PC++)));
         break;
@@ -560,6 +563,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
             LD<ADDRESS_PTR, REGISTER, u16>(this, address, regs.A);
             regs.PC += 2;
         }
+        break;
+    case 0xEE:
+        BITWISE_OP<XOR, IMMEDIATE, u8>(this, read8(regs.PC++));
         break;
     case 0xF0:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + read8(regs.PC++)));
@@ -572,6 +578,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xF5:
         PUSH(this, regs.AF);
+        break;
+    case 0xF6:
+        BITWISE_OP<OR, IMMEDIATE, u8>(this, read8(regs.PC++));
         break;
     case 0xF8:
         LD_HLSPi8(this, static_cast<s8>(read8(regs.PC++)));
