@@ -161,3 +161,23 @@ auto BITWISE_OP(gb::SM83CPU* cpu, const Operand& src) -> void
 
     cpu->setFlag(gb::C, 0);
 }
+
+template<OperandsType SRC_TYPE, typename Operand>
+auto CP(gb::SM83CPU* cpu, const Operand& src) -> void
+{
+    u16 operand = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || SRC_TYPE == IMMEDIATE)
+        operand = (std::is_same_v<Operand, u16>) ? src : static_cast<u8>(src) & 0x00FF;
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+        operand = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
+    else
+        assert(false && "Error in CP opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+
+    u16 result = cpu->regs.A - operand;
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 1);
+    cpu->setFlag(gb::H, result & 0x0001);
+    cpu->setFlag(gb::C, result & 0x0080);
+}

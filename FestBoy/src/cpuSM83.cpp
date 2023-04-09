@@ -490,20 +490,28 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         BITWISE_OP<OR, REGISTER, u8>(this, regs.A);
         break;
     case 0xB8:
+        CP<REGISTER, u8>(this, regs.B);
         break;
     case 0xB9:
+        CP<REGISTER, u8>(this, regs.C);
         break;
     case 0xBA:
+        CP<REGISTER, u8>(this, regs.D);
         break;
     case 0xBB:
+        CP<REGISTER, u8>(this, regs.E);
         break;
     case 0xBC:
+        CP<REGISTER, u8>(this, regs.H);
         break;
     case 0xBD:
+        CP<REGISTER, u8>(this, regs.L);
         break;
     case 0xBE:
+        CP<ADDRESS_PTR, u16>(this, regs.HL);
         break;
     case 0xBF:
+        CP<REGISTER, u8>(this, regs.A);
         break;
     case 0xC1:
         POP(this, regs.BC);
@@ -591,6 +599,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xFA:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC));
         regs.PC += 2;
+        break;
+    case 0xFE:
+        CP<IMMEDIATE, u8>(this, read8(regs.PC++));
         break;
     default:
         printf("\nOpcode %02X not implemented.\n", opcode);
