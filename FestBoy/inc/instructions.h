@@ -46,3 +46,24 @@ auto POP(gb::SM83CPU* cpu, u16& dst) -> void
     dst = cpu->read8(cpu->regs.SP++) & 0x00FF;
     dst |= (static_cast<u16>(cpu->read8(cpu->regs.SP++)) << 8) & 0xFF00;
 }
+
+template<OperandsType SRC_TYPE, typename Operand>
+auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> void
+{
+    u16 result = 0;
+
+    if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || SRC_TYPE == IMMEDIATE)
+        result = (std::is_same_v<Operand, u16>) ? src : static_cast<u8>(src) & 0x00FF;
+    else if constexpr (SRC_TYPE == ADDRESS_PTR)
+        result = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
+    else
+        assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+
+    result = cpu->regs.A + ((addCarryBit) ? cpu->regs.flags.C : 0);
+    cpu->regs.A = result;
+
+    cpu->setFlag(gb::Z, result == 0);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, result & 0x01);
+    cpu->setFlag(gb::C, result & 0x80);
+}

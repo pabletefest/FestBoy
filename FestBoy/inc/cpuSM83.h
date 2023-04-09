@@ -5,6 +5,11 @@ namespace gb
 {
     class GBConsole;
 
+    enum Flags
+    {
+        C, H, N, Z
+    };
+
     // The GameBoy CPU called SM83
     class SM83CPU
     {
@@ -20,6 +25,49 @@ namespace gb
 
         auto reset() -> void;
         auto clock() -> void;
+
+        constexpr auto getFlag(Flags flag) -> u8
+        {
+            switch (flag)
+            {
+            case C:
+                return regs.flags.C;
+                break;
+            case H:
+                return regs.flags.H;
+                break;
+            case N:
+                return regs.flags.N;
+                break;
+            case Z:
+                return regs.flags.Z;
+                break;
+            default:
+                return 0;
+                break;
+            }
+        }
+
+        constexpr auto setFlag(Flags flag, u8 value) -> void
+        {
+            switch (flag)
+            {
+            case C:
+                regs.flags.C = value ? 1 : 0;
+                break;
+            case H:
+                regs.flags.H = value ? 1 : 0;
+                break;
+            case N:
+                regs.flags.N = value ? 1 : 0;
+                break;
+            case Z:
+                regs.flags.Z = value ? 1 : 0;
+                break;
+            default:
+                break;
+            }
+        }
 
     private:
         auto decodeAndExecuteInstruction(u8 opcode) -> void;

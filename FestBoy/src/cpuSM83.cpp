@@ -359,7 +359,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<REGISTER, REGISTER, u16>(this, regs.SP, regs.HL);
         break;
     case 0xFA:
-        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read16(regs.PC));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC));
         regs.PC += 2;
         break;
     default:
