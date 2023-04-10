@@ -1,3 +1,4 @@
+#pragma once
 #include "gb.h"
 
 gb::GBConsole::GBConsole()
@@ -21,12 +22,25 @@ auto gb::GBConsole::read16(const u16& address) -> u16
         return *arrPtr;
     */
 
-    return (internalRAM[address + 1] << 8) | internalRAM[address];
+    //return (internalRAM[address + 1] << 8) | internalRAM[address];
+
+    return (read8(address + 1) << 8) | read8(address);
 }
 
 auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
 {
-    internalRAM[address] = data;
+    switch (address)
+    {
+    case 0xFFFF:
+        IE.reg = data;
+        break;
+    case 0xFF0F:
+        IF.reg = data;
+        break;
+    default:
+        internalRAM[address] = data;
+        break;
+    }
 }
 
 auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
@@ -36,8 +50,11 @@ auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
         *arrPtr = data;
     */
 
-    internalRAM[address] = static_cast<u8>(data & 0x00FF);
-    internalRAM[address + 1] = static_cast<u8>((data >> 8) & 0x00FF);
+    /*internalRAM[address] = static_cast<u8>(data & 0x00FF);
+    internalRAM[address + 1] = static_cast<u8>((data >> 8) & 0x00FF);*/
+
+    write8(address, static_cast<u8>(data & 0x00FF));
+    write8(address + 1, static_cast<u8>((data >> 8) & 0x00FF));
 }
 
 auto gb::GBConsole::reset() -> void

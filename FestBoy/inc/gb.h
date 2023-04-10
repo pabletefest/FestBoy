@@ -27,5 +27,38 @@ namespace gb
         std::array<u8, convertKBToBytes(64)> internalRAM;
 
         u64 systemCyclesElapsed = 0;
+
+    public:
+        bool IME = false;
+
+        union InterruptEnableRegister
+        {
+            struct
+            {
+                u8 VBlank : 1;
+                u8 LCD_STAT : 1;
+                u8 Timer : 1;
+                u8 Serial : 1;
+                u8 Joypad : 1;
+                u8 unused : 3;
+            };
+
+            u8 reg;
+        }IE;
+
+        union InterruptFlagsRegister
+        {
+            struct
+            {
+                u8 VBlank : 1;
+                u8 LCD_STAT : 1;
+                u8 Timer : 1;
+                u8 Serial : 1;
+                u8 Joypad : 1;
+                u8 unused : 3;
+            };
+
+            u8 reg;
+        }IF;
     };
 }

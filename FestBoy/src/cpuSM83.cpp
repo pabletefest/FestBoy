@@ -1,4 +1,5 @@
-#include "cpuSM83.h"
+#pragma once
+//#include "cpuSM83.h"
 #include "gb.h"
 #include "instructions.h"
 
@@ -671,6 +672,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xF2:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + regs.C));
         break;
+    case 0xF3:
+        DI(system);
+        break;
     case 0xF5:
         PUSH(this, regs.AF);
         break;
@@ -686,6 +690,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xFA:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC));
         regs.PC += 2;
+        break;
+    case 0xFB:
+        EI(system);
         break;
     case 0xFE:
         CP<IMMEDIATE, u8>(this, read8(regs.PC++));
