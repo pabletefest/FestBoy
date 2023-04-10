@@ -172,6 +172,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x2E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.L, read8(regs.PC++));
         break;
+    case 0x2F:
+        CPL(this);
+        break;
     case 0x31:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
         regs.PC += 2;
