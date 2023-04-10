@@ -47,6 +47,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
 {
     switch (opcode)
     {
+    case 0x00:
+        NOP();
+        break;
     case 0x01:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.BC, read16(regs.PC));
         regs.PC += 2;
@@ -148,6 +151,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x26:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.H, read8(regs.PC++));
         break;
+    case 0x27:
+        DAA(this);
+        break;
     case 0x29:
         ADD_HLrr(this, regs.HL);
         break;
@@ -186,6 +192,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x36:
         LD<ADDRESS_PTR, IMMEDIATE, u16>(this, regs.HL, read8(regs.PC++));
         break;
+    case 0x37:
+        SCF(this);
+        break;
     case 0x39:
         ADD_HLrr(this, regs.SP);
         break;
@@ -203,6 +212,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x3E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC++));
+        break;
+    case 0x3F:
+        CCF(this);
         break;
     case 0x40:
         LD<REGISTER, REGISTER, u8>(this, regs.B, regs.B);

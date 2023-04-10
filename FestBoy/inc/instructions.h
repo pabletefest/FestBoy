@@ -55,7 +55,7 @@ auto POP(gb::SM83CPU* cpu, u16& dst) -> void
 }
 
 template<OperandsType SRC_TYPE, typename Operand>
-auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> void
+constexpr auto ADDC(gb::SM83CPU* cpu, const Operand& src, bool addCarryBit = false) -> void
 {
     u16 result = 0;
 
@@ -106,7 +106,7 @@ auto ADD_HLrr(gb::SM83CPU* cpu, const u16& reg) -> void
 }
 
 template<OperandsType SRC_TYPE, typename Operand>
-auto SUBC(gb::SM83CPU* cpu, const Operand& src, bool subCarryBit = false) -> void
+constexpr auto SUBC(gb::SM83CPU* cpu, const Operand& src, bool subCarryBit = false) -> void
 {
     u16 operand = 0;
     u16 result = 0;
@@ -128,7 +128,7 @@ auto SUBC(gb::SM83CPU* cpu, const Operand& src, bool subCarryBit = false) -> voi
 }
 
 template<BitwiseOperation OP_TYPE, OperandsType SRC_TYPE, typename Operand>
-auto BITWISE_OP(gb::SM83CPU* cpu, const Operand& src) -> void
+constexpr auto BITWISE_OP(gb::SM83CPU* cpu, const Operand& src) -> void
 {
     u16 operand = 0;
     u16 result = 0;
@@ -163,7 +163,7 @@ auto BITWISE_OP(gb::SM83CPU* cpu, const Operand& src) -> void
 }
 
 template<OperandsType SRC_TYPE, typename Operand>
-auto CP(gb::SM83CPU* cpu, const Operand& src) -> void
+constexpr auto CP(gb::SM83CPU* cpu, const Operand& src) -> void
 {
     u16 operand = 0;
 
@@ -183,7 +183,7 @@ auto CP(gb::SM83CPU* cpu, const Operand& src) -> void
 }
 
 template<OperandsType SRC_TYPE, typename Operand>
-auto INC(gb::SM83CPU* cpu, Operand& src) -> void
+ constexpr auto INC(gb::SM83CPU* cpu, Operand& src) -> void
 {
     u16 result = 0;
 
@@ -206,7 +206,7 @@ auto INC(gb::SM83CPU* cpu, Operand& src) -> void
 }
 
 template<OperandsType SRC_TYPE, typename Operand>
-auto DEC(gb::SM83CPU* cpu, Operand& src) -> void
+constexpr auto DEC(gb::SM83CPU* cpu, Operand& src) -> void
 {
     u16 result = 0;
 
@@ -226,4 +226,49 @@ auto DEC(gb::SM83CPU* cpu, Operand& src) -> void
     cpu->setFlag(gb::Z, result == 0);
     cpu->setFlag(gb::N, 1);
     cpu->setFlag(gb::H, result & 0x0001);
+}
+
+auto DAA(gb::SM83CPU* cpu) -> void
+{
+    // We do high nybble first so that adding 0x06 don't modify upper nybble
+    if (((cpu->regs.A & 0xF0) > 0x90) || cpu->getFlag(gb::C)) // Also ((cpu->regs.A >> 4) & 0x0F) > 0x09
+    {
+        cpu->regs.A += (cpu->getFlag(gb::N)) ? -0x60 : 0x60;
+    }
+
+    if (((cpu->regs.A & 0x0F) > 0x09) || cpu->getFlag(gb::H))
+    {
+        cpu->regs.A += (cpu->getFlag(gb::N)) ? -0x06 : 0x06;
+    }
+
+    cpu->setFlag(gb::Z, cpu->regs.A == 0);
+    cpu->setFlag(gb::H, 0);
+    cpu->setFlag(gb::C, cpu->regs.A > 0x99);
+}
+
+auto CPL(gb::SM83CPU* cpu) -> void
+{
+    cpu->regs.A = ~cpu->regs.A;
+
+    cpu->setFlag(gb::N, 1);
+    cpu->setFlag(gb::H, 1);
+}
+
+auto CCF(gb::SM83CPU* cpu) -> void
+{
+    cpu->setFlag(gb::C, ~cpu->getFlag(gb::C));
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, 0);
+}
+
+auto SCF(gb::SM83CPU* cpu) -> void
+{
+    cpu->setFlag(gb::C, 1);
+    cpu->setFlag(gb::N, 0);
+    cpu->setFlag(gb::H, 0);
+}
+
+auto NOP() -> void
+{
+    // Does nothing
 }
