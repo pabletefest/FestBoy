@@ -316,4 +316,26 @@ namespace gb
 
         return extraCycles;
     }
+
+    static auto JR(gb::SM83CPU* cpu, const s8& relativeAddress) -> void
+    {
+        cpu->regs.PC += relativeAddress;
+    }
+
+    template<JumpConditionFlags condition>
+    static auto JR_COND(gb::SM83CPU* cpu, const s8& relativeAddress) -> u8
+    {
+        u8 extraCycles = 0;
+
+        if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
+            || (condition == JP_Z && cpu->getFlag(Z) == 1)
+            || (condition == JP_NC && cpu->getFlag(C) == 0)
+            || (condition == JP_C && cpu->getFlag(C) == 1))
+        {
+            extraCycles += 4;
+            JR(cpu, relativeAddress);
+        }
+
+        return extraCycles;
+    }
 }

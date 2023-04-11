@@ -115,6 +115,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x16:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.D, read8(regs.PC++));
         break;
+    case 0x18:
+        JR(this, static_cast<s8>(read8(regs.PC++)));
+        break;
     case 0x19:
         ADD_HLrr(this, regs.DE);
         break;
@@ -132,6 +135,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x1E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.E, read8(regs.PC++));
+        break;
+    case 0x20:
+        instructionCycles += JR_COND<JP_NZ>(this, static_cast<s8>(read8(regs.PC++)));
         break;
     case 0x21:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
@@ -156,6 +162,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x27:
         DAA(this);
         break;
+    case 0x28:
+        instructionCycles += JR_COND<JP_Z>(this, static_cast<s8>(read8(regs.PC++)));
+        break;
     case 0x29:
         ADD_HLrr(this, regs.HL);
         break;
@@ -176,6 +185,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x2F:
         CPL(this);
+        break;
+    case 0x30:
+        instructionCycles += JR_COND<JP_NC>(this, static_cast<s8>(read8(regs.PC++)));
         break;
     case 0x31:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
@@ -199,6 +211,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x37:
         SCF(this);
+        break;
+    case 0x38:
+        instructionCycles += JR_COND<JP_C>(this, static_cast<s8>(read8(regs.PC++)));
         break;
     case 0x39:
         ADD_HLrr(this, regs.SP);
