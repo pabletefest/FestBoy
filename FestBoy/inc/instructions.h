@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023 pabletefest
+ *
+ * Licensed under GPLv3 or any later version.
+ * Refer to the included LICENSE file.
+ */
+
 #pragma once
 #include "cpuSM83.h"
 #include "gb.h"
@@ -26,6 +33,26 @@ namespace gb
         JP_Z,
         JP_NC,
         JP_C
+    };
+
+    static constexpr u8 instructionsCyclesTable[256] = {
+        4, 12, 8, 8, 4, 4, 8, 4, 20, 8, 8, 8, 4, 4, 8, 4,
+        4, 12, 8, 8, 4, 4, 8, 4, 12, 8, 8, 8, 4, 4, 8, 4,
+        8, 12, 8, 8, 4, 4, 8, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+        8, 12, 8, 8, 12, 12, 12, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        8, 8, 8, 8, 8, 8, 4, 8, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+        8, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    };
+
+    static constexpr u8 extendedInstructionsCyclesTable[256] = {
+
     };
 
     template<OperandsType DST_TYPE, OperandsType SRC_TYPE, typename Operand>
