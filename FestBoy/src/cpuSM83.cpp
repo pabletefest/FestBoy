@@ -41,7 +41,8 @@ auto gb::SM83CPU::clock() -> void
     }
 
     instructionCycles--;
-    cpuCyclesElapsed++;
+    cpuT_CyclesElapsed++;
+    cpuM_CyclesElapsed = cpuT_CyclesElapsed / 4;
 }
 
 auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
@@ -604,11 +605,23 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xC1:
         POP(this, regs.BC);
         break;
+    case 0xC2:
+        instructionCycles += JP_COND<JP_NZ>(this, read16(regs.PC));
+        regs.PC += 2;
+        break;
+    case 0xC3:
+        JP(this, read16(regs.PC));
+        regs.PC += 2;
+        break;
     case 0xC5:
         PUSH(this, regs.BC);
         break;
     case 0xC6:
         ADDC<IMMEDIATE, u8>(this, read8(regs.PC++), false);
+        break;
+    case 0xCA:
+        instructionCycles += JP_COND<JP_Z>(this, read16(regs.PC));
+        regs.PC += 2;
         break;
     case 0xCB:
         //u8 cbOpcode = read8(regs.PC++);
@@ -620,11 +633,19 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0xD1:
         POP(this, regs.DE);
         break;
+    case 0xD2:
+        instructionCycles += JP_COND<JP_NC>(this, read16(regs.PC));
+        regs.PC += 2;
+        break;
     case 0xD5:
         PUSH(this, regs.DE);
         break;
     case 0xD6:
         SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), false);
+        break;
+    case 0xDA:
+        instructionCycles += JP_COND<JP_C>(this, read16(regs.PC));
+        regs.PC += 2;
         break;
     case 0xDE:
         SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), true);
@@ -652,6 +673,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xE8:
         ADD_SPi8(this, static_cast<s8>(read8(regs.PC++)));
+        break;
+    case 0xE9:
+        JP(this, regs.HL);
         break;
     case 0xEA:
         {

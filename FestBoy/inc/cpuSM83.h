@@ -76,7 +76,8 @@ namespace gb
     private:
         GBConsole* system = nullptr;
         u8 instructionCycles = 0;
-        u64 cpuCyclesElapsed = 0;
+        u64 cpuT_CyclesElapsed = 0;
+        u64 cpuM_CyclesElapsed = 0;
 
     public:
         struct Registers

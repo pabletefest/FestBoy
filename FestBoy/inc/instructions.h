@@ -20,6 +20,14 @@ namespace gb
         OR
     };
 
+    enum JumpConditionFlags
+    {
+        JP_NZ,
+        JP_Z,
+        JP_NC,
+        JP_C
+    };
+
     template<OperandsType DST_TYPE, OperandsType SRC_TYPE, typename Operand>
     static constexpr auto LD(gb::SM83CPU* cpu, Operand& dst, const Operand& src) -> void
     {
@@ -285,5 +293,27 @@ namespace gb
     static auto DI(gb::GBConsole* console) -> void
     {
         console->IME = false;
+    }
+
+    static auto JP(gb::SM83CPU* cpu, const u16& address) -> void
+    {
+        cpu->regs.PC = address;
+    }
+
+    template<JumpConditionFlags condition>
+    static auto JP_COND(gb::SM83CPU* cpu, const u16& address) -> u8
+    {
+        u8 extraCycles = 0;
+    
+        if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
+            || (condition == JP_Z && cpu->getFlag(Z) == 1)
+            || (condition == JP_NC && cpu->getFlag(C) == 0)
+            || (condition == JP_C && cpu->getFlag(C) == 1))
+        {
+            extraCycles += 4;
+            JP(cpu, address);
+        }
+
+        return extraCycles;
     }
 }
