@@ -44,6 +44,7 @@ auto gb::SM83CPU::clock() -> void
     if (instructionCycles == 0) // Time to fetch and execute next opcode
     {
         u8 opcode = read8(regs.PC++);
+        instructionCycles = instructionsCyclesTable[opcode];
         decodeAndExecuteInstruction(opcode);
     }
 
@@ -646,8 +647,11 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         regs.PC += 2;
         break;
     case 0xCB:
-        //u8 cbOpcode = read8(regs.PC++);
-        decodeAndExecuteCBInstruction(read8(regs.PC++));
+        {
+            u8 cbOpcode = read8(regs.PC++);
+            instructionCycles += extendedInstructionsCyclesTable[cbOpcode];
+            decodeAndExecuteCBInstruction(cbOpcode);
+        }
         break;
     case 0xCE:
         ADDC<IMMEDIATE, u8>(this, read8(regs.PC++), true);
