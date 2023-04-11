@@ -340,15 +340,20 @@ namespace gb
         console->IME = false;
     }
 
-    static auto JP(gb::SM83CPU* cpu, const u16& address) -> void
+    static auto JP(gb::SM83CPU* cpu) -> void
     {
+        u16 address = cpu->read16(cpu->regs.PC);
+        cpu->regs.PC += 2;
         cpu->regs.PC = address;
     }
 
     template<JumpConditionFlags condition>
-    static auto JP_COND(gb::SM83CPU* cpu, const u16& address) -> u8
+    static auto JP(gb::SM83CPU* cpu) -> u8
     {
         u8 extraCycles = 0;
+
+        u16 address = cpu->read16(cpu->regs.PC);
+        cpu->regs.PC += 2;
     
         if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
             || (condition == JP_Z && cpu->getFlag(Z) == 1)
@@ -356,7 +361,7 @@ namespace gb
             || (condition == JP_C && cpu->getFlag(C) == 1))
         {
             extraCycles += 4;
-            JP(cpu, address);
+            cpu->regs.PC = address;
         }
 
         return extraCycles;
@@ -364,13 +369,16 @@ namespace gb
 
     static auto JR(gb::SM83CPU* cpu, const s8& relativeAddress) -> void
     {
+        u16 relativeAddress = static_cast<s8>(cpu->read8(cpu->regs.PC++));
         cpu->regs.PC += relativeAddress;
     }
 
     template<JumpConditionFlags condition>
-    static auto JR_COND(gb::SM83CPU* cpu, const s8& relativeAddress) -> u8
+    static auto JR(gb::SM83CPU* cpu) -> u8
     {
         u8 extraCycles = 0;
+
+        u16 relativeAddress = static_cast<s8>(cpu->read8(cpu->regs.PC++));
 
         if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
             || (condition == JP_Z && cpu->getFlag(Z) == 1)
@@ -378,9 +386,36 @@ namespace gb
             || (condition == JP_C && cpu->getFlag(C) == 1))
         {
             extraCycles += 4;
-            JR(cpu, relativeAddress);
+            cpu->regs.PC += relativeAddress;
         }
 
         return extraCycles;
+    }
+
+    static auto CALL(gb::SM83CPU* cpu) -> void
+    {
+        u16 newAddress = cpu->read16(cpu->regs.PC);
+        cpu->regs.PC += 2;
+        PUSH(cpu, cpu->regs.PC);
+        cpu->regs.PC = newAddress;
+    }
+
+    template<JumpConditionFlags condition>
+    static auto CALL(gb::SM83CPU* cpu) -> void
+    {
+        u8 extraCycles = 0;
+
+        u16 newAddress = cpu->read16(cpu->regs.PC);
+        cpu->regs.PC += 2;
+
+        if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
+            || (condition == JP_Z && cpu->getFlag(Z) == 1)
+            || (condition == JP_NC && cpu->getFlag(C) == 0)
+            || (condition == JP_C && cpu->getFlag(C) == 1))
+        {
+            extraCycles += 12;
+            PUSH(cpu, cpu->regs.PC);
+            cpu->regs.PC = newAddress;
+        }
     }
 }
