@@ -81,12 +81,13 @@ namespace gb
         auto decodeAndExecuteCBInstruction(u8 cbOpcode) -> void;
 
     private:
-        GBConsole* system = nullptr;
         u8 instructionCycles = 0;
         u64 cpuT_CyclesElapsed = 0;
         u64 cpuM_CyclesElapsed = 0;
 
     public:
+        GBConsole* system = nullptr;
+
         struct Registers
         {
             union

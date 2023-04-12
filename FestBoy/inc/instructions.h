@@ -340,7 +340,7 @@ namespace gb
         console->IME = false;
     }
 
-    static auto JP(gb::SM83CPU* cpu) -> void
+    static auto JP(gb::SM83CPU* cpu, bool fromHL = false) -> void
     {
         u16 address = cpu->read16(cpu->regs.PC);
         cpu->regs.PC += 2;
@@ -367,7 +367,7 @@ namespace gb
         return extraCycles;
     }
 
-    static auto JR(gb::SM83CPU* cpu, const s8& relativeAddress) -> void
+    static auto JR(gb::SM83CPU* cpu) -> void
     {
         u16 relativeAddress = static_cast<s8>(cpu->read8(cpu->regs.PC++));
         cpu->regs.PC += relativeAddress;
@@ -417,5 +417,41 @@ namespace gb
             PUSH(cpu, cpu->regs.PC);
             cpu->regs.PC = newAddress;
         }
+    }
+
+    auto RET(gb::SM83CPU* cpu) -> void
+    {
+        POP(cpu, cpu->regs.PC);
+    }
+
+    template<JumpConditionFlags condition>
+    auto RET(gb::SM83CPU* cpu) -> u8
+    {
+        u8 extraCycles = 0;
+
+        if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
+            || (condition == JP_Z && cpu->getFlag(Z) == 1)
+            || (condition == JP_NC && cpu->getFlag(C) == 0)
+            || (condition == JP_C && cpu->getFlag(C) == 1))
+        {
+            extraCycles += 12;
+            RET(cpu);
+        }
+
+        return extraCycles;
+    }
+
+
+    auto RETI(gb::SM83CPU* cpu) -> void
+    {
+        RET(cpu);
+        EI(cpu->system);
+    }
+
+    auto RST(gb::SM83CPU* cpu, const u8& vectorLowByte) -> void
+    {
+        u16 vectorAddress = 0x0000 | vectorLowByte;
+        PUSH(cpu, cpu->regs.PC);
+        cpu->regs.PC = vectorAddress;
     }
 }
