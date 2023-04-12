@@ -7,7 +7,8 @@
 
 #pragma once
 #include "emu_typedefs.h"
-#include "cpuSM83.h"
+#include "cpu_sm83.h"
+#include "game_pack.h"
 
 #include <array>
 
@@ -18,6 +19,8 @@ namespace gb
     public:
         GBConsole();
         ~GBConsole() = default;
+
+        auto insertCartridge(const Ref<GamePak>& cartridge) -> void;
 
         auto read8(const u16& address) -> u8;
         auto read16(const u16& address) -> u16;
@@ -34,6 +37,8 @@ namespace gb
         std::array<u8, convertKBToBytes(64)> internalRAM;
 
         u64 systemCyclesElapsed = 0;
+
+        Ref<GamePak> gamePak;
 
     public:
         bool IME = false;

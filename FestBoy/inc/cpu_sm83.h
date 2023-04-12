@@ -76,6 +76,8 @@ namespace gb
             }
         }
 
+        auto checkPendingInterrupts() -> bool;
+
     private:
         auto decodeAndExecuteInstruction(u8 opcode) -> void;
         auto decodeAndExecuteCBInstruction(u8 cbOpcode) -> void;

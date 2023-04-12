@@ -7,9 +7,10 @@
 
 #pragma once
 #include "gb.h"
+#include "game_pack.h"
 
 gb::GBConsole::GBConsole()
-    : cpu(this)
+    : cpu(this), IE({}), IF({})
 {
     /*for (auto& item : internalRAM)
         item = 0x00;*/
@@ -17,9 +18,23 @@ gb::GBConsole::GBConsole()
     std::memset(internalRAM.data(), 0x00, internalRAM.size());
 }
 
+auto gb::GBConsole::insertCartridge(const Ref<GamePak>& cartridge) -> void
+{
+    this->gamePak = cartridge;
+}
+
 auto gb::GBConsole::read8(const u16& address) -> u8
 {
-    return internalRAM[address];
+    u8 dataRead = 0x00;
+
+    if (gamePak->read(address, dataRead))
+    {
+        // Let the Cartridge handle the read
+    }
+    else
+        dataRead = internalRAM[address];
+
+    return dataRead;
 }
 
 auto gb::GBConsole::read16(const u16& address) -> u16
@@ -38,6 +53,9 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
 {
     switch (address)
     {
+    case 0xFF02: // Control register
+        printf("%c", internalRAM[0xFF01]);
+        break;
     case 0xFFFF:
         IE.reg = data;
         break;
@@ -45,7 +63,12 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
         IF.reg = data;
         break;
     default:
-        internalRAM[address] = data;
+        if (gamePak->write(address, data))
+        {
+            // Let the cartridge handle the write
+        }
+        else
+            internalRAM[address] = data;
         break;
     }
 }
@@ -67,6 +90,10 @@ auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
 auto gb::GBConsole::reset() -> void
 {
     cpu.reset();
+
+    // TEMP for tests
+    cpu.regs.PC = 0x0100;
+    internalRAM[0xFF44] = 0x90;
 }
 
 auto gb::GBConsole::clock() -> void

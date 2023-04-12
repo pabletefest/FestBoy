@@ -6,7 +6,7 @@
  */
 
 #pragma once
-#include "cpuSM83.h"
+#include "cpu_sm83.h"
 #include "gb.h"
 
 #include <cassert>
@@ -378,7 +378,7 @@ namespace gb
     {
         u8 extraCycles = 0;
 
-        u16 relativeAddress = static_cast<s8>(cpu->read8(cpu->regs.PC++));
+        s8 relativeAddressByte = static_cast<s8>(cpu->read8(cpu->regs.PC++));
 
         if ((condition == JP_NZ && cpu->getFlag(Z) == 0)
             || (condition == JP_Z && cpu->getFlag(Z) == 1)
@@ -386,7 +386,7 @@ namespace gb
             || (condition == JP_C && cpu->getFlag(C) == 1))
         {
             extraCycles += 4;
-            cpu->regs.PC += relativeAddress;
+            cpu->regs.PC += relativeAddressByte;
         }
 
         return extraCycles;
@@ -453,5 +453,15 @@ namespace gb
         u16 vectorAddress = 0x0000 | vectorLowByte;
         PUSH(cpu, cpu->regs.PC);
         cpu->regs.PC = vectorAddress;
+    }
+
+    auto HALT(gb::SM83CPU* cpu) -> void
+    {
+        while (!cpu->checkPendingInterrupts());
+
+        if (cpu->system->IME)
+        {
+            // TODO
+        }
     }
 }

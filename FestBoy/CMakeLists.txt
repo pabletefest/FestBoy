@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.8)
 find_package(SDL2 REQUIRED)
 
 # Add source to this project's executable.
-add_executable (${PROJECT_NAME} "main.cpp"  "src/cpuSM83.cpp" "inc/instructions.h" "inc/gb.h" "src/gb.cpp")
+add_executable (${PROJECT_NAME} "main.cpp"  "src/cpu_sm83.cpp" "inc/instructions.h" "inc/gb.h" "src/gb.cpp" "inc/game_pack.h" "src/game_pack.cpp" "inc/mapper.h" "src/mapper.cpp" "inc/no_mbc.h" "src/no_mbc.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE inc/)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2 SDL2::SDL2main)

@@ -13,6 +13,12 @@
 gb::SM83CPU::SM83CPU(GBConsole* device)
     : system(device), regs({})
 {
+    // Initial DMG register values
+    regs.AF = 0x01B0;
+    regs.BC = 0x0013;
+    regs.DE = 0x00D8;
+    regs.HL = 0x014D;
+    regs.SP = 0xFFFE;
 }
 
 auto gb::SM83CPU::read8(const u16& address) -> u8
@@ -27,6 +33,8 @@ auto gb::SM83CPU::read16(const u16& address) -> u16
 
 auto gb::SM83CPU::write8(const u16& address, const u8& data) -> void
 {
+    if (address == 0xFF01 || address == 0xF002)
+        printf("-----------------------------------\n");
     system->write8(address, data);
 }
 
@@ -51,6 +59,15 @@ auto gb::SM83CPU::clock() -> void
     instructionCycles--;
     cpuT_CyclesElapsed++;
     cpuM_CyclesElapsed = cpuT_CyclesElapsed / 4;
+}
+
+auto gb::SM83CPU::checkPendingInterrupts() -> bool
+{
+    return (system->IE.VBlank && system->IF.VBlank)
+        || (system->IE.LCD_STAT && system->IF.LCD_STAT)
+        || (system->IE.Timer && system->IF.Timer)
+        || (system->IE.Serial && system->IF.Serial)
+        || (system->IE.Joypad && system->IF.Joypad);
 }
 
 auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
@@ -405,6 +422,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x75:
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.L);
+        break;
+    case 0x76:
+        HALT(this);
         break;
     case 0x77:
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.A);
@@ -764,6 +784,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xF1:
         POP(this, regs.AF);
+        regs.AF &= 0xFFF0;
         break;
     case 0xF2:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + regs.C));
@@ -772,6 +793,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         DI(system);
         break;
     case 0xF5:
+        regs.AF &= 0xFFF0;
         PUSH(this, regs.AF);
         break;
     case 0xF6:
