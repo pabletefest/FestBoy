@@ -13,12 +13,6 @@
 gb::SM83CPU::SM83CPU(GBConsole* device)
     : system(device), regs({})
 {
-    // Initial DMG register values
-    regs.AF = 0x01B0;
-    regs.BC = 0x0013;
-    regs.DE = 0x00D8;
-    regs.HL = 0x014D;
-    regs.SP = 0xFFFE;
 }
 
 auto gb::SM83CPU::read8(const u16& address) -> u8
@@ -33,8 +27,6 @@ auto gb::SM83CPU::read16(const u16& address) -> u16
 
 auto gb::SM83CPU::write8(const u16& address, const u8& data) -> void
 {
-    if (address == 0xFF01 || address == 0xF002)
-        printf("-----------------------------------\n");
     system->write8(address, data);
 }
 
@@ -45,6 +37,8 @@ auto gb::SM83CPU::write16(const u16& address, const u16& data) -> void
 
 auto gb::SM83CPU::reset() -> void
 {
+    // Initial DMG register values after bootrom
+    setRegisterValuesPostBootROM();
 }
 
 auto gb::SM83CPU::clock() -> void
@@ -96,6 +90,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x06:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.B, read8(regs.PC++));
         break;
+    case 0x07:
+        RLCA(this);
+        break;
     case 0x08:
         {
             u16 address = read16(regs.PC);
@@ -121,6 +118,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x0E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.C, read8(regs.PC++));
         break;
+    case 0x0F:
+        RRCA(this);
+        break;
     case 0x11:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.DE, read16(regs.PC));
         regs.PC += 2;
@@ -139,6 +139,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x16:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.D, read8(regs.PC++));
+        break;
+    case 0x17:
+        RLA(this);
         break;
     case 0x18:
         JR(this);
@@ -160,6 +163,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x1E:
         LD<REGISTER, IMMEDIATE, u8>(this, regs.E, read8(regs.PC++));
+        break;
+    case 0x1F:
+        RRA(this);
         break;
     case 0x20:
         instructionCycles += JR<JP_NZ>(this);
@@ -829,4 +835,71 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
 
 auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
 {
+}
+
+auto gb::SM83CPU::setRegisterValuesPostBootROM() -> void
+{
+    regs.AF = (read8(0x014D) == 0x00) ? 0x0100 : 0x01B0;
+    regs.BC = 0x0013;
+    regs.DE = 0x00D8;
+    regs.HL = 0x014D;
+    regs.SP = 0xFFFE;
+    regs.PC = 0x1000;
+
+    write8(0xFF00, 0xCF);
+    write8(0xFF01, 0x00);
+    write8(0xFF02, 0x7E);
+    write8(0xFF04, 0xAB);
+    write8(0xFF05, 0x00);
+    write8(0xFF06, 0x00);
+    write8(0xFF07, 0xF8);
+    write8(0xFF0F, 0xE1);
+    write8(0xFF10, 0x80);
+    write8(0xFF11, 0xBF);
+    write8(0xFF12, 0xF3);
+    write8(0xFF13, 0xFF);
+    write8(0xFF14, 0xBF);
+    write8(0xFF16, 0x3F);
+    write8(0xFF17, 0x00);
+    write8(0xFF18, 0xFF);
+    write8(0xFF19, 0xBF);
+    write8(0xFF1A, 0x7F);
+    write8(0xFF1B, 0xFF);
+    write8(0xFF1C, 0x9F);
+    write8(0xFF1D, 0xFF);
+    write8(0xFF1E, 0xBF);
+    write8(0xFF20, 0xFF);
+    write8(0xFF21, 0x00);
+    write8(0xFF22, 0x00);
+    write8(0xFF23, 0xBF);
+    write8(0xFF24, 0x77);
+    write8(0xFF25, 0xF3);
+    write8(0xFF26, 0xF1);
+    write8(0xFF40, 0x91);
+    write8(0xFF41, 0x85);
+    write8(0xFF42, 0x00);
+    write8(0xFF43, 0x00);
+    write8(0xFF44, 0x00);
+    write8(0xFF45, 0x00);
+    write8(0xFF46, 0xFF);
+    write8(0xFF47, 0xFC);
+    /*write8(0xFF48, 0x85);
+    write8(0xFF49, 0x85);*/
+    write8(0xFF4A, 0x00);
+    write8(0xFF4B, 0x00);
+    write8(0xFF4C, 0xFF);
+    write8(0xFF4D, 0xFF);
+    write8(0xFF4F, 0xFF);
+    write8(0xFF51, 0xFF);
+    write8(0xFF52, 0xFF);
+    write8(0xFF53, 0xFF);
+    write8(0xFF54, 0xFF);
+    write8(0xFF55, 0xFF);
+    write8(0xFF56, 0xFF);
+    write8(0xFF68, 0xFF);
+    write8(0xFF69, 0xFF);
+    write8(0xFF6A, 0xFF);
+    write8(0xFF6B, 0xFF);
+    write8(0xFF70, 0xFF);
+    write8(0xFFFF, 0x00);
 }

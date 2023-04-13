@@ -82,6 +82,8 @@ namespace gb
         auto decodeAndExecuteInstruction(u8 opcode) -> void;
         auto decodeAndExecuteCBInstruction(u8 cbOpcode) -> void;
 
+        auto setRegisterValuesPostBootROM() -> void;
+
     private:
         u8 instructionCycles = 0;
         u64 cpuT_CyclesElapsed = 0;
