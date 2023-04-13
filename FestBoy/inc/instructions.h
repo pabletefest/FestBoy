@@ -464,4 +464,57 @@ namespace gb
             // TODO
         }
     }
+
+    auto STOP() -> void
+    {
+
+    }
+
+    auto RLCA(gb::SM83CPU* cpu) -> void
+    {
+        u8 bit7 = (cpu->regs.A & 0x80) >> 7;
+        cpu->regs.A <<= 1;
+        cpu->regs.A |= bit7;
+
+        cpu->setFlag(gb::Z, 0);
+        cpu->setFlag(gb::N, 0);
+        cpu->setFlag(gb::H, 0);
+        cpu->setFlag(gb::C, bit7);
+    }
+
+    auto RRCA(gb::SM83CPU* cpu) -> void
+    {
+        u8 bit0 = cpu->regs.A & 0x01;
+        cpu->regs.A >>= 1;
+        cpu->regs.A |= (bit0 << 7);
+
+        cpu->setFlag(gb::Z, 0);
+        cpu->setFlag(gb::N, 0);
+        cpu->setFlag(gb::H, 0);
+        cpu->setFlag(gb::C, bit0);
+    }
+
+    auto RLA(gb::SM83CPU* cpu) -> void
+    {
+        u8 bit7 = (cpu->regs.A & 0x80) >> 7;
+        cpu->regs.A <<= 1;
+        cpu->regs.A |= cpu->getFlag(gb::C);
+
+        cpu->setFlag(gb::Z, 0);
+        cpu->setFlag(gb::N, 0);
+        cpu->setFlag(gb::H, 0);
+        cpu->setFlag(gb::C, bit7);
+    }
+
+    auto RRA(gb::SM83CPU* cpu) -> void
+    {
+        u8 bit0 = cpu->regs.A & 0x01;
+        cpu->regs.A >>= 1;
+        cpu->regs.A |= (cpu->getFlag(gb::C) << 7);
+
+        cpu->setFlag(gb::Z, 0);
+        cpu->setFlag(gb::N, 0);
+        cpu->setFlag(gb::H, 0);
+        cpu->setFlag(gb::C, bit0);
+    }
 }
