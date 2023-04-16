@@ -1264,7 +1264,7 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
     case 0x87:
         RES<0, u8>(this, regs.A);
         break;
-    case 0x78:
+    case 0x88:
         RES<1, u8>(this, regs.B);
         break;
     case 0x89:
@@ -1428,6 +1428,195 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0xBF:
         RES<7, u8>(this, regs.A);
+        break;
+    case 0xC0:
+        SET<0, u8>(this, regs.B);
+        break;
+    case 0xC1:
+        SET<0, u8>(this, regs.C);
+        break;
+    case 0xC2:
+        SET<0, u8>(this, regs.D);
+        break;
+    case 0xC3:
+        SET<0, u8>(this, regs.E);
+        break;
+    case 0xC4:
+        SET<0, u8>(this, regs.H);
+        break;
+    case 0xC5:
+        SET<0, u8>(this, regs.L);
+        break;
+    case 0xC6:
+        SET<0, u16>(this, regs.HL);
+        break;
+    case 0xC7:
+        SET<0, u8>(this, regs.A);
+        break;
+    case 0xC8:
+        SET<1, u8>(this, regs.B);
+        break;
+    case 0xC9:
+        SET<1, u8>(this, regs.C);
+        break;
+    case 0xCA:
+        SET<1, u8>(this, regs.D);
+        break;
+    case 0xCB:
+        SET<1, u8>(this, regs.E);
+        break;
+    case 0xCC:
+        SET<1, u8>(this, regs.H);
+        break;
+    case 0xCD:
+        SET<1, u8>(this, regs.L);
+        break;
+    case 0xCE:
+        SET<1, u16>(this, regs.HL);
+        break;
+    case 0xCF:
+        SET<1, u8>(this, regs.A);
+        break;
+    case 0xD0:
+        SET<2, u8>(this, regs.B);
+        break;
+    case 0xD1:
+        SET<2, u8>(this, regs.C);
+        break;
+    case 0xD2:
+        SET<2, u8>(this, regs.D);
+        break;
+    case 0xD3:
+        SET<2, u8>(this, regs.E);
+        break;
+    case 0xD4:
+        SET<2, u8>(this, regs.H);
+        break;
+    case 0xD5:
+        SET<2, u8>(this, regs.L);
+        break;
+    case 0xD6:
+        SET<2, u16>(this, regs.HL);
+        break;
+    case 0xD7:
+        SET<2, u8>(this, regs.A);
+        break;
+    case 0xD8:
+        SET<3, u8>(this, regs.B);
+        break;
+    case 0xD9:
+        SET<3, u8>(this, regs.C);
+        break;
+    case 0xDA:
+        SET<3, u8>(this, regs.D);
+        break;
+    case 0xDB:
+        SET<3, u8>(this, regs.E);
+        break;
+    case 0xDC:
+        SET<3, u8>(this, regs.H);
+        break;
+    case 0xDD:
+        SET<3, u8>(this, regs.L);
+        break;
+    case 0xDE:
+        SET<3, u16>(this, regs.HL);
+        break;
+    case 0xDF:
+        SET<3, u8>(this, regs.A);
+        break;
+    case 0xE0:
+        SET<4, u8>(this, regs.B);
+        break;
+    case 0xE1:
+        SET<4, u8>(this, regs.C);
+        break;
+    case 0xE2:
+        SET<4, u8>(this, regs.D);
+        break;
+    case 0xE3:
+        SET<4, u8>(this, regs.E);
+        break;
+    case 0xE4:
+        SET<4, u8>(this, regs.H);
+        break;
+    case 0xE5:
+        SET<4, u8>(this, regs.L);
+        break;
+    case 0xE6:
+        SET<4, u16>(this, regs.HL);
+        break;
+    case 0xE7:
+        SET<4, u8>(this, regs.A);
+        break;
+    case 0xE8:
+        SET<5, u8>(this, regs.B);
+        break;
+    case 0xE9:
+        SET<5, u8>(this, regs.C);
+        break;
+    case 0xEA:
+        SET<5, u8>(this, regs.D);
+        break;
+    case 0xEB:
+        SET<5, u8>(this, regs.E);
+        break;
+    case 0xEC:
+        SET<5, u8>(this, regs.H);
+        break;
+    case 0xED:
+        SET<5, u8>(this, regs.L);
+        break;
+    case 0xEE:
+        SET<5, u16>(this, regs.HL);
+        break;
+    case 0xEF:
+        SET<5, u8>(this, regs.A);
+        break;
+    case 0xF0:
+        SET<6, u8>(this, regs.B);
+        break;
+    case 0xF1:
+        SET<6, u8>(this, regs.C);
+        break;
+    case 0xF2:
+        SET<6, u8>(this, regs.D);
+        break;
+    case 0xF3:
+        SET<6, u8>(this, regs.E);
+        break;
+    case 0xF4:
+        SET<6, u8>(this, regs.H);
+        break;
+    case 0xF5:
+        SET<6, u8>(this, regs.L);
+        break;
+    case 0xF6:
+        SET<6, u16>(this, regs.HL);
+        break;
+    case 0xF7:
+        SET<6, u8>(this, regs.A);
+        break;
+    case 0xF8:
+        SET<7, u8>(this, regs.B);
+        break;
+    case 0xFA:
+        SET<7, u8>(this, regs.D);
+        break;
+    case 0xFB:
+        SET<7, u8>(this, regs.E);
+        break;
+    case 0xFC:
+        SET<7, u8>(this, regs.H);
+        break;
+    case 0xFD:
+        SET<7, u8>(this, regs.L);
+        break;
+    case 0xFE:
+        SET<7, u16>(this, regs.HL);
+        break;
+    case 0xFF:
+        SET<7, u8>(this, regs.A);
         break;
     default:
         printf("\n0xCB extended opcode %02X not implemented.\n", cbOpcode);
