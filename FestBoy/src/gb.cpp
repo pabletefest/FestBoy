@@ -9,6 +9,8 @@
 #include "gb.h"
 #include "game_pack.h"
 
+#include <iostream>
+
 gb::GBConsole::GBConsole()
     : cpu(this), IE({}), IF({})
 {
@@ -53,11 +55,11 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
 {
     switch (address)
     {
-    case 0xFF02: // Control register
-        printf("%c", internalRAM[0xFF01]);
-        break;
+    case 0xFF02:
+        if (data == 0x81)
+            printf("%c", internalRAM[0xFF01]);
     case 0xFFFF:
-        IE.reg = data;
+         IE.reg = data;
         break;
     case 0xFF0F:
         IF.reg = data;

@@ -8,6 +8,10 @@
 #pragma once
 #include "emu_typedefs.h"
 
+#if _DEBUG
+#include <fstream>
+#endif
+
 namespace gb
 {
     class GBConsole;
@@ -88,6 +92,10 @@ namespace gb
         u8 instructionCycles = 0;
         u64 cpuT_CyclesElapsed = 0;
         u64 cpuM_CyclesElapsed = 0;
+
+#if _DEBUG
+        std::ofstream logFile;
+#endif
 
     public:
         GBConsole* system = nullptr;

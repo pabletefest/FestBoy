@@ -16,7 +16,45 @@
 
 int main(int argc, char* argv[])
 {
-    //std::cout << "Hello CMake." << std::endl;
+#if 0
+    int counter = 0;
+    std::ifstream ifs1;
+    ifs1.open("cpu_log.txt");
+
+    std::ifstream ifs2;
+    ifs2.open("tests/Gameboy-logs/Blargg7LYStubbed/Blargg7.txt");
+
+    if (ifs1.is_open() && ifs2.is_open())
+    {
+        std::string line1;
+        std::string line2;
+
+        std::string prev1;
+        std::string prev2;
+
+        while (std::getline(ifs1, line1) && std::getline(ifs2, line2))
+        {
+            if (line1 != line2)
+            {
+                printf("Line diff at %d\n", counter);
+                printf("Original lines: \n");
+                printf("%s\n", prev2.c_str());
+                printf("%s\n", line2.c_str());
+                printf("Actual lines: \n");
+                printf("%s\n", prev1.c_str());
+                printf("%s\n", line1.c_str());
+                printf("\n");
+            }
+
+            prev1 = line1;
+            prev2 = line2;
+
+            counter++;
+        }
+    }
+#endif
+
+    std::cout << "Hello CMake." << std::endl;
 
     gb::GBConsole emulator;
 
@@ -25,8 +63,8 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/03-op sp,hl.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/04-op r,imm.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/05-op rp.gb");
-    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/06-ld r,r.gb");
-    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/06-ld r,r.gb");
+    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/08-misc instrs.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/09-op r,r.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/10-bit ops.gb");

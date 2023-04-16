@@ -13,6 +13,9 @@
 gb::SM83CPU::SM83CPU(GBConsole* device)
     : system(device), regs({})
 {
+#if _DEBUG
+    logFile.open("cpu_log.txt");
+#endif
 }
 
 auto gb::SM83CPU::read8(const u16& address) -> u8
@@ -46,6 +49,17 @@ auto gb::SM83CPU::clock() -> void
     if (instructionCycles == 0) // Time to fetch and execute next opcode
     {
         u8 opcode = read8(regs.PC++);
+        char msgLog[256];
+        sprintf(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
+        //printf(msgLog);
+
+#if _DEBUG
+        if (logFile.is_open())
+        {
+            logFile << std::string(msgLog);
+        }
+#endif
+    
         instructionCycles = instructionsCyclesTable[opcode];
         decodeAndExecuteInstruction(opcode);
     }
@@ -221,7 +235,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         instructionCycles += JR<JP_NC>(this);
         break;
     case 0x31:
-        LD<REGISTER, IMMEDIATE, u16>(this, regs.HL, read16(regs.PC));
+        LD<REGISTER, IMMEDIATE, u16>(this, regs.SP, read16(regs.PC));
         regs.PC += 2;
         break;
     case 0x32:
@@ -430,6 +444,11 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.L);
         break;
     case 0x76:
+#if _DEBUG
+        logFile.flush();
+        logFile.close();
+        std::abort();
+#endif
         HALT(this);
         break;
     case 0x77:
@@ -598,7 +617,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         BITWISE_OP<XOR, REGISTER, u8>(this, regs.L);
         break;
     case 0xAE:
-        BITWISE_OP<XOR, IMMEDIATE, u16>(this, regs.HL);
+        BITWISE_OP<XOR, ADDRESS_PTR, u16>(this, regs.HL);
         break;
     case 0xAF:
         BITWISE_OP<XOR, REGISTER, u8>(this, regs.A);
@@ -815,7 +834,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<REGISTER, REGISTER, u16>(this, regs.SP, regs.HL);
         break;
     case 0xFA:
-        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.PC));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(read16(regs.PC)));
         regs.PC += 2;
         break;
     case 0xFB:
