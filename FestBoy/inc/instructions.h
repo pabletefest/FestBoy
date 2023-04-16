@@ -730,4 +730,55 @@ namespace gb
         cpu->setFlag(gb::H, 0);
         cpu->setFlag(gb::C, bit0);
     }
+
+    template<u8 Bit, typename Operand>
+    auto BIT(gb::SM83CPU* cpu, Operand& operand) -> void
+    {
+        u8 value = 0;
+
+        if constexpr (std::is_same_v<Operand, u16>)
+            value = cpu->read8(operand);
+        else
+            value = operand;
+
+        cpu->setFlag(gb::Z, ~((value >> Bit) & 0x01));
+        cpu->setFlag(gb::N, 0);
+        cpu->setFlag(gb::H, 1);
+    }
+
+    template<u8 Bit, typename Operand>
+    auto RES(gb::SM83CPU* cpu, Operand& operand) -> void
+    {
+        u8 value = 0;
+
+        if constexpr (std::is_same_v<Operand, u16>)
+            value = cpu->read8(operand);
+        else
+            value = operand;
+
+        value &= ~(1u << Bit);
+
+        if constexpr (std::is_same_v<Operand, u16>)
+            cpu->write8(operand, value);
+        else
+            operand = value;
+    }
+
+    template<u8 Bit, typename Operand>
+    auto SET(gb::SM83CPU* cpu, Operand& operand) -> void
+    {
+        u8 value = 0;
+
+        if constexpr (std::is_same_v<Operand, u16>)
+            value = cpu->read8(operand);
+        else
+            value = operand;
+
+        value |= (1u << Bit);
+
+        if constexpr (std::is_same_v<Operand, u16>)
+            cpu->write8(operand, value);
+        else
+            operand = value;
+    }
 }

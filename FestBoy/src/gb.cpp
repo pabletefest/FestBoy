@@ -34,7 +34,20 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         // Let the Cartridge handle the read
     }
     else
-        dataRead = internalRAM[address];
+    {
+        switch (address)
+        {
+        case 0xFFFF:
+            dataRead = 0xE0 | internalRAM[address];
+            break;
+        case 0xFF0F:
+            dataRead = 0xE0 | internalRAM[address];
+            break;
+        default:
+            dataRead = internalRAM[address];
+            break;
+        }
+    }
 
     return dataRead;
 }
@@ -59,7 +72,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
         if (data == 0x81)
             printf("%c", internalRAM[0xFF01]);
     case 0xFFFF:
-         IE.reg = data;
+        IE.reg = data;
         break;
     case 0xFF0F:
         IF.reg = data;
