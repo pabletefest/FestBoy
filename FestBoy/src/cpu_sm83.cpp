@@ -882,20 +882,28 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0x08:
         RRC<u8>(this, regs.B);
+        break;
     case 0x09:
         RRC<u8>(this, regs.C);
+        break;
     case 0x0A:
         RRC<u8>(this, regs.D);
+        break;
     case 0x0B:
         RRC<u8>(this, regs.E);
+        break;
     case 0x0C:
         RRC<u8>(this, regs.H);
+        break;
     case 0x0D:
         RRC<u8>(this, regs.L);
+        break;
     case 0x0E:
         RRC<u16>(this, regs.HL);
+        break;
     case 0x0F:
         RRC<u8>(this, regs.A);
+        break;
     case 0x10:
         RL<u8>(this, regs.B);
         break;
@@ -922,20 +930,28 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0x18:
         RR<u8>(this, regs.B);
+        break;
     case 0x19:
         RR<u8>(this, regs.C);
+        break;
     case 0x1A:
         RR<u8>(this, regs.D);
+        break;
     case 0x1B:
         RR<u8>(this, regs.E);
+        break;
     case 0x1C:
         RR<u8>(this, regs.H);
+        break;
     case 0x1D:
         RR<u8>(this, regs.L);
+        break;
     case 0x1E:
         RR<u16>(this, regs.HL);
+        break;
     case 0x1F:
         RR<u8>(this, regs.A);
+        break;
     case 0x20:
         SLA<u8>(this, regs.B);
         break;
@@ -962,20 +978,28 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0x28:
         SRA<u8>(this, regs.B);
+        break;
     case 0x29:
         SRA<u8>(this, regs.C);
+        break;
     case 0x2A:
         SRA<u8>(this, regs.D);
+        break;
     case 0x2B:
         SRA<u8>(this, regs.E);
+        break;
     case 0x2C:
         SRA<u8>(this, regs.H);
+        break;
     case 0x2D:
         SRA<u8>(this, regs.L);
+        break;
     case 0x2E:
         SRA<u16>(this, regs.HL);
+        break;
     case 0x2F:
         SRA<u8>(this, regs.A);
+        break;
     case 0x30:
         SWAP<u8>(this, regs.B);
         break;
@@ -1002,20 +1026,409 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0x38:
         SRL<u8>(this, regs.B);
+        break;
     case 0x39:
         SRL<u8>(this, regs.C);
+        break;
     case 0x3A:
         SRL<u8>(this, regs.D);
+        break;
     case 0x3B:
         SRL<u8>(this, regs.E);
+        break;
     case 0x3C:
         SRL<u8>(this, regs.H);
+        break;
     case 0x3D:
         SRL<u8>(this, regs.L);
+        break;
     case 0x3E:
         SRL<u16>(this, regs.HL);
+        break;
     case 0x3F:
         SRL<u8>(this, regs.A);
+        break;
+    case 0x40:
+        BIT<0, u8>(this, regs.B);
+        break;
+    case 0x41:
+        BIT<0, u8>(this, regs.C);
+        break;
+    case 0x42:
+        BIT<0, u8>(this, regs.D);
+        break;
+    case 0x43:
+        BIT<0, u8>(this, regs.E);
+        break;
+    case 0x44:
+        BIT<0, u8>(this, regs.H);
+        break;
+    case 0x45:
+        BIT<0, u8>(this, regs.L);
+        break;
+    case 0x46:
+        BIT<0, u16>(this, regs.HL);
+        break;
+    case 0x47:
+        BIT<0, u8>(this, regs.A);
+        break;
+    case 0x48:
+        BIT<1, u8>(this, regs.B);
+        break;
+    case 0x49:
+        BIT<1, u8>(this, regs.C);
+        break;
+    case 0x4A:
+        BIT<1, u8>(this, regs.D);
+        break;
+    case 0x4B:
+        BIT<1, u8>(this, regs.E);
+        break;
+    case 0x4C:
+        BIT<1, u8>(this, regs.H);
+        break;
+    case 0x4D:
+        BIT<1, u8>(this, regs.L);
+        break;
+    case 0x4E:
+        BIT<1, u16>(this, regs.HL);
+        break;
+    case 0x4F:
+        BIT<1, u8>(this, regs.A);
+        break;
+    case 0x50:
+        BIT<2, u8>(this, regs.B);
+        break;
+    case 0x51:
+        BIT<2, u8>(this, regs.C);
+        break;
+    case 0x52:
+        BIT<2, u8>(this, regs.D);
+        break;
+    case 0x53:
+        BIT<2, u8>(this, regs.E);
+        break;
+    case 0x54:
+        BIT<2, u8>(this, regs.H);
+        break;
+    case 0x55:
+        BIT<2, u8>(this, regs.L);
+        break;
+    case 0x56:
+        BIT<2, u16>(this, regs.HL);
+        break;
+    case 0x57:
+        BIT<2, u8>(this, regs.A);
+        break;
+    case 0x58:
+        BIT<3, u8>(this, regs.B);
+        break;
+    case 0x59:
+        BIT<3, u8>(this, regs.C);
+        break;
+    case 0x5A:
+        BIT<3, u8>(this, regs.D);
+        break;
+    case 0x5B:
+        BIT<3, u8>(this, regs.E);
+        break;
+    case 0x5C:
+        BIT<3, u8>(this, regs.H);
+        break;
+    case 0x5D:
+        BIT<3, u8>(this, regs.L);
+        break;
+    case 0x5E:
+        BIT<3, u16>(this, regs.HL);
+        break;
+    case 0x5F:
+        BIT<3, u8>(this, regs.A);
+        break;
+    case 0x60:
+        BIT<4, u8>(this, regs.B);
+        break;
+    case 0x61:
+        BIT<4, u8>(this, regs.C);
+        break;
+    case 0x62:
+        BIT<4, u8>(this, regs.D);
+        break;
+    case 0x63:
+        BIT<4, u8>(this, regs.E);
+        break;
+    case 0x64:
+        BIT<4, u8>(this, regs.H);
+        break;
+    case 0x65:
+        BIT<4, u8>(this, regs.L);
+        break;
+    case 0x66:
+        BIT<4, u16>(this, regs.HL);
+        break;
+    case 0x67:
+        BIT<4, u8>(this, regs.A);
+        break;
+    case 0x68:
+        BIT<5, u8>(this, regs.B);
+        break;
+    case 0x69:
+        BIT<5, u8>(this, regs.C);
+        break;
+    case 0x6A:
+        BIT<5, u8>(this, regs.D);
+        break;
+    case 0x6B:
+        BIT<5, u8>(this, regs.E);
+        break;
+    case 0x6C:
+        BIT<5, u8>(this, regs.H);
+        break;
+    case 0x6D:
+        BIT<5, u8>(this, regs.L);
+        break;
+    case 0x6E:
+        BIT<5, u16>(this, regs.HL);
+        break;
+    case 0x6F:
+        BIT<5, u8>(this, regs.A);
+        break;
+    case 0x70:
+        BIT<6, u8>(this, regs.B);
+        break;
+    case 0x71:
+        BIT<6, u8>(this, regs.C);
+        break;
+    case 0x72:
+        BIT<6, u8>(this, regs.D);
+        break;
+    case 0x73:
+        BIT<6, u8>(this, regs.E);
+        break;
+    case 0x74:
+        BIT<6, u8>(this, regs.H);
+        break;
+    case 0x75:
+        BIT<6, u8>(this, regs.L);
+        break;
+    case 0x76:
+        BIT<6, u16>(this, regs.HL);
+        break;
+    case 0x77:
+        BIT<6, u8>(this, regs.A);
+        break;
+    case 0x78:
+        BIT<7, u8>(this, regs.B);
+        break;
+    case 0x79:
+        BIT<7, u8>(this, regs.C);
+        break;
+    case 0x7A:
+        BIT<7, u8>(this, regs.D);
+        break;
+    case 0x7B:
+        BIT<7, u8>(this, regs.E);
+        break;
+    case 0x7C:
+        BIT<7, u8>(this, regs.H);
+        break;
+    case 0x7D:
+        BIT<7, u8>(this, regs.L);
+        break;
+    case 0x7E:
+        BIT<7, u16>(this, regs.HL);
+        break;
+    case 0x7F:
+        BIT<7, u8>(this, regs.A);
+        break;
+    case 0x80:
+        RES<0, u8>(this, regs.B);
+        break;
+    case 0x81:
+        RES<0, u8>(this, regs.C);
+        break;
+    case 0x82:
+        RES<0, u8>(this, regs.D);
+        break;
+    case 0x83:
+        RES<0, u8>(this, regs.E);
+        break;
+    case 0x84:
+        RES<0, u8>(this, regs.H);
+        break;
+    case 0x85:
+        RES<0, u8>(this, regs.L);
+        break;
+    case 0x86:
+        RES<0, u16>(this, regs.HL);
+        break;
+    case 0x87:
+        RES<0, u8>(this, regs.A);
+        break;
+    case 0x78:
+        RES<1, u8>(this, regs.B);
+        break;
+    case 0x89:
+        RES<1, u8>(this, regs.C);
+        break;
+    case 0x8A:
+        RES<1, u8>(this, regs.D);
+        break;
+    case 0x8B:
+        RES<1, u8>(this, regs.E);
+        break;
+    case 0x8C:
+        RES<1, u8>(this, regs.H);
+        break;
+    case 0x8D:
+        RES<1, u8>(this, regs.L);
+        break;
+    case 0x8E:
+        RES<1, u16>(this, regs.HL);
+        break;
+    case 0x8F:
+        RES<1, u8>(this, regs.A);
+        break;
+    case 0x90:
+        RES<2, u8>(this, regs.B);
+        break;
+    case 0x91:
+        RES<2, u8>(this, regs.C);
+        break;
+    case 0x92:
+        RES<2, u8>(this, regs.D);
+        break;
+    case 0x93:
+        RES<2, u8>(this, regs.E);
+        break;
+    case 0x94:
+        RES<2, u8>(this, regs.H);
+        break;
+    case 0x95:
+        RES<2, u8>(this, regs.L);
+        break;
+    case 0x96:
+        RES<2, u16>(this, regs.HL);
+        break;
+    case 0x97:
+        RES<2, u8>(this, regs.A);
+        break;
+    case 0x98:
+        RES<3, u8>(this, regs.B);
+        break;
+    case 0x99:
+        RES<3, u8>(this, regs.C);
+        break;
+    case 0x9A:
+        RES<3, u8>(this, regs.D);
+        break;
+    case 0x9B:
+        RES<3, u8>(this, regs.E);
+        break;
+    case 0x9C:
+        RES<3, u8>(this, regs.H);
+        break;
+    case 0x9D:
+        RES<3, u8>(this, regs.L);
+        break;
+    case 0x9E:
+        RES<3, u16>(this, regs.HL);
+        break;
+    case 0x9F:
+        RES<3, u8>(this, regs.A);
+        break;
+    case 0xA0:
+        RES<4, u8>(this, regs.B);
+        break;
+    case 0xA1:
+        RES<4, u8>(this, regs.C);
+        break;
+    case 0xA2:
+        RES<4, u8>(this, regs.D);
+        break;
+    case 0xA3:
+        RES<4, u8>(this, regs.E);
+        break;
+    case 0xA4:
+        RES<4, u8>(this, regs.H);
+        break;
+    case 0xA5:
+        RES<4, u8>(this, regs.L);
+        break;
+    case 0xA6:
+        RES<4, u16>(this, regs.HL);
+        break;
+    case 0xA7:
+        RES<4, u8>(this, regs.A);
+        break;
+    case 0xA8:
+        RES<5, u8>(this, regs.B);
+        break;
+    case 0xA9:
+        RES<5, u8>(this, regs.C);
+        break;
+    case 0xAA:
+        RES<5, u8>(this, regs.D);
+        break;
+    case 0xAB:
+        RES<5, u8>(this, regs.E);
+        break;
+    case 0xAC:
+        RES<5, u8>(this, regs.H);
+        break;
+    case 0xAD:
+        RES<5, u8>(this, regs.L);
+        break;
+    case 0xAE:
+        RES<5, u16>(this, regs.HL);
+        break;
+    case 0xAF:
+        RES<5, u8>(this, regs.A);
+        break;
+    case 0xB0:
+        RES<6, u8>(this, regs.B);
+        break;
+    case 0xB1:
+        RES<6, u8>(this, regs.C);
+        break;
+    case 0xB2:
+        RES<6, u8>(this, regs.D);
+        break;
+    case 0xB3:
+        RES<6, u8>(this, regs.E);
+        break;
+    case 0xB4:
+        RES<6, u8>(this, regs.H);
+        break;
+    case 0xB5:
+        RES<6, u8>(this, regs.L);
+        break;
+    case 0xB6:
+        RES<6, u16>(this, regs.HL);
+        break;
+    case 0xB7:
+        RES<6, u8>(this, regs.A);
+        break;
+    case 0xB8:
+        RES<7, u8>(this, regs.B);
+        break;
+    case 0xBA:
+        RES<7, u8>(this, regs.D);
+        break;
+    case 0xBB:
+        RES<7, u8>(this, regs.E);
+        break;
+    case 0xBC:
+        RES<7, u8>(this, regs.H);
+        break;
+    case 0xBD:
+        RES<7, u8>(this, regs.L);
+        break;
+    case 0xBE:
+        RES<7, u16>(this, regs.HL);
+        break;
+    case 0xBF:
+        RES<7, u8>(this, regs.A);
+        break;
     default:
         printf("\n0xCB extended opcode %02X not implemented.\n", cbOpcode);
         break;
