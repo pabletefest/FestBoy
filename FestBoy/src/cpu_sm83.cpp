@@ -854,6 +854,172 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
 
 auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
 {
+    switch (cbOpcode)
+    {
+    case 0x00:
+        RLC<u8>(this, regs.B);
+        break;
+    case 0x01:
+        RLC<u8>(this, regs.C);
+        break;
+    case 0x02:
+        RLC<u8>(this, regs.D);
+        break;
+    case 0x03:
+        RLC<u8>(this, regs.E);
+        break;
+    case 0x04:
+        RLC<u8>(this, regs.H);
+        break;
+    case 0x05:
+        RLC<u8>(this, regs.L);
+        break;
+    case 0x06:
+        RLC<u16>(this, regs.HL);
+        break;
+    case 0x07:
+        RLC<u8>(this, regs.A);
+        break;
+    case 0x08:
+        RRC<u8>(this, regs.B);
+    case 0x09:
+        RRC<u8>(this, regs.C);
+    case 0x0A:
+        RRC<u8>(this, regs.D);
+    case 0x0B:
+        RRC<u8>(this, regs.E);
+    case 0x0C:
+        RRC<u8>(this, regs.H);
+    case 0x0D:
+        RRC<u8>(this, regs.L);
+    case 0x0E:
+        RRC<u16>(this, regs.HL);
+    case 0x0F:
+        RRC<u8>(this, regs.A);
+    case 0x10:
+        RL<u8>(this, regs.B);
+        break;
+    case 0x11:
+        RL<u8>(this, regs.C);
+        break;
+    case 0x12:
+        RL<u8>(this, regs.D);
+        break;
+    case 0x13:
+        RL<u8>(this, regs.E);
+        break;
+    case 0x14:
+        RL<u8>(this, regs.H);
+        break;
+    case 0x15:
+        RL<u8>(this, regs.L);
+        break;
+    case 0x16:
+        RL<u16>(this, regs.HL);
+        break;
+    case 0x17:
+        RL<u8>(this, regs.A);
+        break;
+    case 0x18:
+        RR<u8>(this, regs.B);
+    case 0x19:
+        RR<u8>(this, regs.C);
+    case 0x1A:
+        RR<u8>(this, regs.D);
+    case 0x1B:
+        RR<u8>(this, regs.E);
+    case 0x1C:
+        RR<u8>(this, regs.H);
+    case 0x1D:
+        RR<u8>(this, regs.L);
+    case 0x1E:
+        RR<u16>(this, regs.HL);
+    case 0x1F:
+        RR<u8>(this, regs.A);
+    case 0x20:
+        SLA<u8>(this, regs.B);
+        break;
+    case 0x21:
+        SLA<u8>(this, regs.C);
+        break;
+    case 0x22:
+        SLA<u8>(this, regs.D);
+        break;
+    case 0x23:
+        SLA<u8>(this, regs.E);
+        break;
+    case 0x24:
+        SLA<u8>(this, regs.H);
+        break;
+    case 0x25:
+        SLA<u8>(this, regs.L);
+        break;
+    case 0x26:
+        SLA<u16>(this, regs.HL);
+        break;
+    case 0x27:
+        SLA<u8>(this, regs.A);
+        break;
+    case 0x28:
+        SRA<u8>(this, regs.B);
+    case 0x29:
+        SRA<u8>(this, regs.C);
+    case 0x2A:
+        SRA<u8>(this, regs.D);
+    case 0x2B:
+        SRA<u8>(this, regs.E);
+    case 0x2C:
+        SRA<u8>(this, regs.H);
+    case 0x2D:
+        SRA<u8>(this, regs.L);
+    case 0x2E:
+        SRA<u16>(this, regs.HL);
+    case 0x2F:
+        SRA<u8>(this, regs.A);
+    case 0x30:
+        SWAP<u8>(this, regs.B);
+        break;
+    case 0x31:
+        SWAP<u8>(this, regs.C);
+        break;
+    case 0x32:
+        SWAP<u8>(this, regs.D);
+        break;
+    case 0x33:
+        SWAP<u8>(this, regs.E);
+        break;
+    case 0x34:
+        SWAP<u8>(this, regs.H);
+        break;
+    case 0x35:
+        SWAP<u8>(this, regs.L);
+        break;
+    case 0x36:
+        SWAP<u16>(this, regs.HL);
+        break;
+    case 0x37:
+        SWAP<u8>(this, regs.A);
+        break;
+    case 0x38:
+        SRL<u8>(this, regs.B);
+    case 0x39:
+        SRL<u8>(this, regs.C);
+    case 0x3A:
+        SRL<u8>(this, regs.D);
+    case 0x3B:
+        SRL<u8>(this, regs.E);
+    case 0x3C:
+        SRL<u8>(this, regs.H);
+    case 0x3D:
+        SRL<u8>(this, regs.L);
+    case 0x3E:
+        SRL<u16>(this, regs.HL);
+    case 0x3F:
+        SRL<u8>(this, regs.A);
+    default:
+        printf("\n0xCB extended opcode %02X not implemented.\n", cbOpcode);
+        break;
+    }
 }
 
 auto gb::SM83CPU::setRegisterValuesPostBootROM() -> void
