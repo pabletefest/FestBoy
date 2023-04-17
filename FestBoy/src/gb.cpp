@@ -71,6 +71,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     case 0xFF02:
         if (data == 0x81)
             printf("%c", internalRAM[0xFF01]);
+        break;
     case 0xFFFF:
         IE.reg = data;
         break;

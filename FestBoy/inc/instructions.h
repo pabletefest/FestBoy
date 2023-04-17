@@ -123,13 +123,15 @@ namespace gb
         else
             assert(false && "Error in ADD/ADC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
         
+        u16 originalValue = cpu->regs.A;
+        u16 originalOperand = result;
         operand = result + ((addCarryBit) ? cpu->regs.flags.C : 0);
         result = cpu->regs.A + operand;
         cpu->regs.A = result & 0x00FF;
 
         cpu->setFlag(gb::Z, cpu->regs.A == 0);
         cpu->setFlag(gb::N, 0);
-        cpu->setFlag(gb::H, ((operand & 0x0F) + ((result - operand) & 0x0F)) > 0x0F);
+        cpu->setFlag(gb::H, ((originalValue & 0x0F) + (originalOperand & 0x0F) + ((addCarryBit) ? cpu->regs.flags.C : 0)) > 0x0F);
         cpu->setFlag(gb::C, result > 0xFF);
     }
 
@@ -161,15 +163,17 @@ namespace gb
 
     static auto ADD_HLrr(gb::SM83CPU* cpu, const u16& reg) -> void
     {
+        u16 operand = reg;
         cpu->regs.HL += reg;
 
         u16 result = cpu->regs.HL;
-        u16 operand = reg;
+
+        auto test = ((operand & 0x0FFF) + ((result - operand) & 0x0FFF)) > 0x0FFF;
 
         //cpu->setFlag(gb::Z, 0);
         cpu->setFlag(gb::N, 0);
-        cpu->setFlag(gb::H, ((operand & 0x0F) + ((result - operand) & 0x0F)) > 0x0F);
-        cpu->setFlag(gb::C, ((operand & 0xFF) + ((result - operand) & 0xFF)) > 0xFF);
+        cpu->setFlag(gb::H, ((operand & 0x0FFF) + ((result - operand) & 0x0FFF)) > 0x0FFF);
+        cpu->setFlag(gb::C, ((operand & 0xFFFF) + ((result - operand) & 0xFFFF)) > 0xFFFF);
     }
 
     template<OperandsType SRC_TYPE, typename Operand>
@@ -185,15 +189,15 @@ namespace gb
         else
             assert(false && "Error in SUB/SBD opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
 
-        operand -= ((subCarryBit) ? cpu->regs.flags.C : 0);
+        //operand -= ((subCarryBit) ? cpu->regs.flags.C : 0);
 
-        result = cpu->regs.A - operand;
+        result = cpu->regs.A - operand - ((subCarryBit) ? cpu->regs.flags.C : 0);
         cpu->regs.A = result & 0x00FF;
 
         cpu->setFlag(gb::Z, cpu->regs.A == 0);
         cpu->setFlag(gb::N, 1);
-        cpu->setFlag(gb::H, (result & 0xF0) > 0x0F);
-        cpu->setFlag(gb::C, (result & 0xFF00) > 0xFF);
+        cpu->setFlag(gb::H, static_cast<s16>((((result + operand + ((subCarryBit) ? cpu->regs.flags.C : 0)) & 0x0F) - (operand & 0x0F) - ((subCarryBit) ? cpu->regs.flags.C : 0))) < 0);
+        cpu->setFlag(gb::C, result > 0xFF);
     }
 
     template<BitwiseOperation OP_TYPE, OperandsType SRC_TYPE, typename Operand>
@@ -247,8 +251,8 @@ namespace gb
 
         cpu->setFlag(gb::Z, result == 0);
         cpu->setFlag(gb::N, 1);
-        cpu->setFlag(gb::H, (operand & 0x0008) && ((result + operand) & 0x0010));
-        cpu->setFlag(gb::C, (operand & 0x0080) && ((result + operand) & 0x0100));
+        cpu->setFlag(gb::H, (((result + operand) & 0x0F) - (operand & 0x0F)) < 0);
+        cpu->setFlag(gb::C, result > 0xFF);
     }
 
     template<OperandsType SRC_TYPE, typename Operand>
@@ -295,11 +299,11 @@ namespace gb
         else
             assert(false && "Error in DEC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary/immediate variable");
 
-        if (std::is_same_v<Operand, u8>)
+        if (std::is_same_v<Operand, u8> || SRC_TYPE == ADDRESS_PTR)
         {
             cpu->setFlag(gb::Z, result == 0);
             cpu->setFlag(gb::N, 1);
-            cpu->setFlag(gb::H, (result & 0x0F) == 0x0F);
+            cpu->setFlag(gb::H, (((result + 1) & 0x0F) - 1) < 0);
         }
     }
 
@@ -360,7 +364,7 @@ namespace gb
 
     static auto JP(gb::SM83CPU* cpu, bool fromHL = false) -> void
     {
-        u16 address = (fromHL) ? cpu->read16(cpu->regs.HL) : cpu->read16(cpu->regs.PC);
+        u16 address = (fromHL) ? cpu->regs.HL : cpu->read16(cpu->regs.PC);
         cpu->regs.PC += 2;
         cpu->regs.PC = address;
     }

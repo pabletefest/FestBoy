@@ -641,7 +641,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         BITWISE_OP<OR, REGISTER, u8>(this, regs.L);
         break;
     case 0xB6:
-        BITWISE_OP<OR, IMMEDIATE, u16>(this, regs.HL);
+        BITWISE_OP<OR, ADDRESS_PTR, u16>(this, regs.HL);
         break;
     case 0xB7:
         BITWISE_OP<OR, REGISTER, u8>(this, regs.A);
