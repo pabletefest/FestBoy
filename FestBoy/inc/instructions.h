@@ -273,9 +273,9 @@ namespace gb
         else
             assert(false && "Error in INC opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary/immediate variable");
 
-        if constexpr (std::is_same_v<Operand, u8>)
+        if constexpr (std::is_same_v<Operand, u8> || SRC_TYPE == ADDRESS_PTR)
         {
-            cpu->setFlag(gb::Z, result == 0);
+            cpu->setFlag(gb::Z, (result & 0x00FF) == 0);
             cpu->setFlag(gb::N, 0);
             cpu->setFlag(gb::H, (((result - 1) & 0x0F) + 1) > 0x0F);
         }
@@ -309,20 +309,23 @@ namespace gb
 
     static auto DAA(gb::SM83CPU* cpu) -> void
     {
+        u8 carryFlag = 0;
+
         // We do high nybble first so that adding 0x06 don't modify upper nybble
-        if (((cpu->regs.A & 0xF0) > 0x90) || cpu->getFlag(gb::C)) // Also ((cpu->regs.A >> 4) & 0x0F) > 0x09
+        if (cpu->getFlag(gb::C) || ((cpu->regs.A > 0x99) && (cpu->getFlag(gb::N) == 0))) // Also ((cpu->regs.A >> 4) & 0x0F) > 0x09
         {
             cpu->regs.A += (cpu->getFlag(gb::N)) ? -0x60 : 0x60;
+            carryFlag = 1;
         }
 
-        if (((cpu->regs.A & 0x0F) > 0x09) || cpu->getFlag(gb::H))
+        if ((((cpu->regs.A & 0x0F) > 0x09) && (cpu->getFlag(gb::N) == 0)) || cpu->getFlag(gb::H))
         {
             cpu->regs.A += (cpu->getFlag(gb::N)) ? -0x06 : 0x06;
         }
 
         cpu->setFlag(gb::Z, cpu->regs.A == 0);
         cpu->setFlag(gb::H, 0);
-        cpu->setFlag(gb::C, cpu->regs.A > 0x99);
+        cpu->setFlag(gb::C, carryFlag);
     }
 
     static auto CPL(gb::SM83CPU* cpu) -> void
@@ -335,9 +338,9 @@ namespace gb
 
     static auto CCF(gb::SM83CPU* cpu) -> void
     {
-        cpu->setFlag(gb::C, ~cpu->getFlag(gb::C));
         cpu->setFlag(gb::N, 0);
         cpu->setFlag(gb::H, 0);
+        cpu->setFlag(gb::C, cpu->getFlag(gb::C) ^ 1);
     }
 
     static auto SCF(gb::SM83CPU* cpu) -> void
@@ -745,7 +748,7 @@ namespace gb
         else
             value = operand;
 
-        cpu->setFlag(gb::Z, ~((value >> Bit) & 0x01));
+        cpu->setFlag(gb::Z, ((value >> Bit) & 0x01) ^ 1);
         cpu->setFlag(gb::N, 0);
         cpu->setFlag(gb::H, 1);
     }

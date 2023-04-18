@@ -264,7 +264,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         ADD_HLrr(this, regs.SP);
         break;
     case 0x3A:
-        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.BC--));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(regs.HL--));
         break;
     case 0x3B:
         DEC<REGISTER, u16>(this, regs.SP);
@@ -1411,6 +1411,9 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
     case 0xB8:
         RES<7, u8>(this, regs.B);
         break;
+    case 0xB9:
+        RES<7, u8>(this, regs.C);
+        break;
     case 0xBA:
         RES<7, u8>(this, regs.D);
         break;
@@ -1599,6 +1602,9 @@ auto gb::SM83CPU::decodeAndExecuteCBInstruction(u8 cbOpcode) -> void
         break;
     case 0xF8:
         SET<7, u8>(this, regs.B);
+        break;
+    case 0xF9:
+        SET<7, u8>(this, regs.C);
         break;
     case 0xFA:
         SET<7, u8>(this, regs.D);
