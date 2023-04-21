@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023 pabletefest
+ *
+ * Licensed under GPLv3 or any later version.
+ * Refer to the included LICENSE file.
+ */
+
 #pragma once
 #include "emu_typedefs.h"
 #include "mapper.h"

@@ -137,15 +137,16 @@ namespace gb
 
     static auto ADD_SPi8(gb::SM83CPU* cpu, const s8& immediate) -> void
     {
+        u16 reg = cpu->regs.SP;
         cpu->regs.SP += immediate;
 
-        u16 result = cpu->regs.SP;
-        u16 operand = immediate;
+        //u16 result = cpu->regs.SP;
+        //s16 operand = immediate;
 
         cpu->setFlag(gb::Z, 0);
         cpu->setFlag(gb::N, 0);
-        cpu->setFlag(gb::H, ((operand & 0x0F) + ((result - operand) & 0x0F)) > 0x0F);
-        cpu->setFlag(gb::C, ((operand & 0xFF) + ((result - operand) & 0xFF)) > 0xFF);
+        cpu->setFlag(gb::H, ((reg & 0x0F) + (immediate & 0x0F)) > 0x0F);
+        cpu->setFlag(gb::C, ((reg & 0xFF) + (immediate & 0xFF)) > 0xFF);
     }
 
     static auto LD_HLSPi8(gb::SM83CPU* cpu, const s8& immediate) -> void

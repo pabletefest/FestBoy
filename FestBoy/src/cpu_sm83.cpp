@@ -763,7 +763,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xE0:
         {
-            u16 address = 0xFF00 + read8(regs.PC++);
+            u16 address = 0xFF00 | read8(regs.PC++);
             LD<ADDRESS_PTR, REGISTER, u16>(this, address, regs.A);
         }
         break;
@@ -772,7 +772,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0xE2:
         {
-            u16 address = 0xFF00 + regs.C;
+            u16 address = 0xFF00 | regs.C;
             LD<ADDRESS_PTR, REGISTER, u16>(this, address, regs.A);
         }
         break;
@@ -805,14 +805,14 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         RST(this, 0x28);
         break;
     case 0xF0:
-        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + read8(regs.PC++)));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 | read8(regs.PC++)));
         break;
     case 0xF1:
         POP(this, regs.AF);
         regs.AF &= 0xFFF0;
         break;
     case 0xF2:
-        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 + regs.C));
+        LD<REGISTER, IMMEDIATE, u8>(this, regs.A, read8(0xFF00 | regs.C));
         break;
     case 0xF3:
         DI(system);

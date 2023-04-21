@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023 pabletefest
+ *
+ * Licensed under GPLv3 or any later version.
+ * Refer to the included LICENSE file.
+ */
+
 #include "game_pack.h"
 #include "no_mbc.h"
 
@@ -25,7 +32,7 @@ gb::GamePak::GamePak(const std::string& filename)
         nROMBanks = static_cast<u8>(romSize / convertKBToBytes(16));
 
         ifs.seekg(0);
-        vROMMemory.resize(nROMBanks * convertKBToBytes(16));
+        vROMMemory.resize(nROMBanks * convertKBToBytes(16)); // We could use romSize
         ifs.read((char*)vROMMemory.data(), romSize);
 
         switch (header.cartridgeType)
@@ -60,7 +67,7 @@ auto gb::GamePak::write(u16 addr, u8 data) -> bool
     if (mapper->mapWrite(addr, mappedAddress, data))
     {
         // No need to modify ROM memory
-        //vROMMemory[mappedAddress] = data;
+        vROMMemory[mappedAddress] = data;
         return true;
     }
 

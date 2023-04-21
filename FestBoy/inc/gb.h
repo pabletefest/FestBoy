@@ -32,6 +32,11 @@ namespace gb
         auto clock() -> void;
         auto step(u64 numberCycles) -> void;
 
+        inline auto getCPU() -> SM83CPU&
+        {
+            return cpu;
+        }
+
     private:
         SM83CPU cpu;
         std::array<u8, convertKBToBytes(64)> internalRAM;

@@ -36,6 +36,9 @@ using vu64 = volatile std::uint64_t;
 using vs64 = volatile std::int64_t;
 using vi64 = vs64;
 
+using f32 = float;
+using f64 = double;
+
 template<typename T> using Scope = std::unique_ptr<T>;
 template<typename T> using Unique = std::unique_ptr<T>;
 template<typename T> using Ref = std::shared_ptr<T>;
