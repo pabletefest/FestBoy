@@ -458,13 +458,13 @@ namespace gb
         }
     }
 
-    auto RET(gb::SM83CPU* cpu) -> void
+    static auto RET(gb::SM83CPU* cpu) -> void
     {
         POP(cpu, cpu->regs.PC);
     }
 
     template<JumpConditionFlags condition>
-    auto RET(gb::SM83CPU* cpu) -> u8
+    static auto RET(gb::SM83CPU* cpu) -> u8
     {
         u8 extraCycles = 0;
 
@@ -481,20 +481,20 @@ namespace gb
     }
 
 
-    auto RETI(gb::SM83CPU* cpu) -> void
+    static auto RETI(gb::SM83CPU* cpu) -> void
     {
         RET(cpu);
         EI(cpu->system);
     }
 
-    auto RST(gb::SM83CPU* cpu, const u8& vectorLowByte) -> void
+    static auto RST(gb::SM83CPU* cpu, const u8& vectorLowByte) -> void
     {
         u16 vectorAddress = 0x0000 | vectorLowByte;
         PUSH(cpu, cpu->regs.PC);
         cpu->regs.PC = vectorAddress;
     }
 
-    auto HALT(gb::SM83CPU* cpu) -> void
+    static auto HALT(gb::SM83CPU* cpu) -> void
     {
         while (!cpu->checkPendingInterrupts());
 
@@ -504,12 +504,12 @@ namespace gb
         }
     }
 
-    auto STOP() -> void
+    static auto STOP() -> void
     {
 
     }
 
-    auto RLCA(gb::SM83CPU* cpu) -> void
+    static auto RLCA(gb::SM83CPU* cpu) -> void
     {
         u8 bit7 = (cpu->regs.A & 0x80) >> 7;
         cpu->regs.A <<= 1;
@@ -521,7 +521,7 @@ namespace gb
         cpu->setFlag(gb::C, bit7);
     }
 
-    auto RRCA(gb::SM83CPU* cpu) -> void
+    static auto RRCA(gb::SM83CPU* cpu) -> void
     {
         u8 bit0 = cpu->regs.A & 0x01;
         cpu->regs.A >>= 1;
@@ -533,7 +533,7 @@ namespace gb
         cpu->setFlag(gb::C, bit0);
     }
 
-    auto RLA(gb::SM83CPU* cpu) -> void
+    static auto RLA(gb::SM83CPU* cpu) -> void
     {
         u8 bit7 = (cpu->regs.A & 0x80) >> 7;
         cpu->regs.A <<= 1;
@@ -545,7 +545,7 @@ namespace gb
         cpu->setFlag(gb::C, bit7);
     }
 
-    auto RRA(gb::SM83CPU* cpu) -> void
+    static auto RRA(gb::SM83CPU* cpu) -> void
     {
         u8 bit0 = cpu->regs.A & 0x01;
         cpu->regs.A >>= 1;
@@ -558,7 +558,7 @@ namespace gb
     }
     
     template<typename Operand>
-    auto RLC(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto RLC(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -583,7 +583,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto RRC(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto RRC(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -608,7 +608,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto RL(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto RL(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -633,7 +633,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto RR(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto RR(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -658,7 +658,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto SLA(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto SLA(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -682,7 +682,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto SRA(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto SRA(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         s8 value = 0;
 
@@ -706,7 +706,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto SWAP(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto SWAP(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -729,7 +729,7 @@ namespace gb
     }
 
     template<typename Operand>
-    auto SRL(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto SRL(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -753,7 +753,7 @@ namespace gb
     }
 
     template<u8 Bit, typename Operand>
-    auto BIT(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto BIT(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -768,7 +768,7 @@ namespace gb
     }
 
     template<u8 Bit, typename Operand>
-    auto RES(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto RES(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
@@ -786,7 +786,7 @@ namespace gb
     }
 
     template<u8 Bit, typename Operand>
-    auto SET(gb::SM83CPU* cpu, Operand& operand) -> void
+    static constexpr auto SET(gb::SM83CPU* cpu, Operand& operand) -> void
     {
         u8 value = 0;
 
