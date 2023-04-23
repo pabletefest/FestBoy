@@ -93,7 +93,7 @@ namespace gb
         u64 cpuT_CyclesElapsed = 0;
         u64 cpuM_CyclesElapsed = 0;
 
-#if _DEBUG
+#if /*_DEBUG*/ 0
         std::ofstream logFile;
 #endif
 
@@ -162,5 +162,7 @@ namespace gb
             u16 SP;
             u16 PC;
         }regs;
+        
+        u8* debugRAM = nullptr;
     };
 }

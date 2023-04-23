@@ -18,6 +18,7 @@ gb::GBConsole::GBConsole()
         item = 0x00;*/
 
     std::memset(internalRAM.data(), 0x00, internalRAM.size());
+    cpu.debugRAM = internalRAM.data();
 }
 
 auto gb::GBConsole::insertCartridge(const Ref<GamePak>& cartridge) -> void

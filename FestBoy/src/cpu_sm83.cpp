@@ -10,31 +10,53 @@
 #include "gb.h"
 #include "instructions.h"
 
+#define TESTING
+
 gb::SM83CPU::SM83CPU(GBConsole* device)
     : system(device), regs({})
 {
-#if _DEBUG
+#if /*_DEBUG*/ 0
     logFile.open("cpu_log.txt");
 #endif
 }
 
 auto gb::SM83CPU::read8(const u16& address) -> u8
 {
+#ifdef TESTING
+    return debugRAM[address];
+#endif 
+
     return system->read8(address);
 }
 
 auto gb::SM83CPU::read16(const u16& address) -> u16
 {
+#ifdef TESTING
+    return (debugRAM[address + 1] << 8) | debugRAM[address];
+#endif 
+
     return system->read16(address);
 }
 
 auto gb::SM83CPU::write8(const u16& address, const u8& data) -> void
 {
+#ifdef TESTING
+    debugRAM[address] = data;
+    return;
+#endif 
+
     system->write8(address, data);
 }
 
 auto gb::SM83CPU::write16(const u16& address, const u16& data) -> void
 {
+#ifdef TESTING
+    //reinterpret_cast<u16*>(debugRAM)[address] = data;
+    write8(address, static_cast<u8>(data & 0x00FF));
+    write8(address + 1, static_cast<u8>((data >> 8) & 0x00FF));
+    return;
+#endif 
+
     system->write16(address, data);
 }
 
@@ -53,7 +75,7 @@ auto gb::SM83CPU::clock() -> void
         sprintf(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
         //printf(msgLog);
 
-#if _DEBUG
+#if /*_DEBUG*/ 0
         if (logFile.is_open())
         {
             logFile << std::string(msgLog);
@@ -110,7 +132,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
     case 0x08:
         {
             u16 address = read16(regs.PC);
-            LD<ADDRESS_PTR, REGISTER, u16>(this, address, regs.SP);
+            LD_u16SP(this, address);
             regs.PC += 2;
         }
         break;
@@ -134,6 +156,9 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         break;
     case 0x0F:
         RRCA(this);
+        break;
+    case 0x10:
+        // TODO: STOP instruction
         break;
     case 0x11:
         LD<REGISTER, IMMEDIATE, u16>(this, regs.DE, read16(regs.PC));
@@ -444,7 +469,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         LD<ADDRESS_PTR, REGISTER, u16>(this, regs.HL, regs.L);
         break;
     case 0x76:
-#if _DEBUG
+#if /*_DEBUG*/ 0
         logFile.flush();
         logFile.close();
         std::abort();

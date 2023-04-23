@@ -88,9 +88,22 @@ namespace gb
         if constexpr ((DST_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || DST_TYPE == IMMEDIATE)
             dst = (std::is_same_v<Operand, u16>) ? value : static_cast<u8>(value) & 0x00FF;
         else if constexpr (DST_TYPE == ADDRESS_PTR)
-            /*(std::is_same_v<Operand, u16>) ? cpu->write16(dst, value) : */cpu->write8(dst, static_cast<u8>(value));
+        {
+            /*(std::is_same_v<Operand, u16>) ? cpu->write16(dst, value) : cpu->write8(dst, static_cast<u8>(value));*/
+            /*if (std::is_same_v<Operand, u16> && SRC_TYPE == REGISTER)
+                cpu->write16(dst, value);
+            else
+                cpu->write8(dst, static_cast<u8>(value));*/
+
+            cpu->write8(dst, static_cast<u8>(value));
+        }   
         else
             assert(false && "Error in LD opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
+    }
+
+    static auto LD_u16SP(gb::SM83CPU* cpu, const u16& address) -> void
+    {
+        cpu->write16(address, cpu->regs.SP);
     }
 
     static auto PUSH(gb::SM83CPU* cpu, const u16& src) -> void
@@ -244,7 +257,7 @@ namespace gb
         if constexpr ((SRC_TYPE == REGISTER && std::is_unsigned_v<Operand> && not std::is_rvalue_reference_v<Operand>) || SRC_TYPE == IMMEDIATE)
             operand = (std::is_same_v<Operand, u16>) ? src : static_cast<u8>(src) & 0x00FF;
         else if constexpr (SRC_TYPE == ADDRESS_PTR)
-            operand = (std::is_same_v<Operand, u16>) ? cpu->read16(src) : cpu->read8(src) & 0x00FF;
+            operand = /*(std::is_same_v<Operand, u16>) ? cpu->read16(src) :*/ cpu->read8(src) & 0x00FF;
         else
             assert(false && "Error in CP opcode: Possible errors are wrong OperantType, register passed is not unsigned or it's a temporary variable");
 

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
     gb::GBConsole emulator;
 
-    testOpcodes(&emulator.getCPU());
+    testAllOpcodes(&emulator.getCPU());
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/01-special.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/02-interrupts.gb");
