@@ -10,7 +10,7 @@
 #include "gb.h"
 #include "instructions.h"
 
-#define TESTING
+//#define TESTING
 
 gb::SM83CPU::SM83CPU(GBConsole* device)
     : system(device), regs({})
@@ -708,7 +708,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         JP(this);
         break;
     case 0xC4:
-        CALL<JP_NZ>(this);
+        instructionCycles += CALL<JP_NZ>(this);
         break;
     case 0xC5:
         PUSH(this, regs.BC);
@@ -736,7 +736,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         }
         break;
     case 0xCC:
-        CALL<JP_Z>(this);
+        instructionCycles += CALL<JP_Z>(this);
         break;
     case 0xCD:
         CALL(this);
@@ -757,7 +757,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         instructionCycles += JP<JP_NC>(this);
         break;
     case 0xD4:
-        CALL<JP_NC>(this);
+        instructionCycles += CALL<JP_NC>(this);
         break;
     case 0xD5:
         PUSH(this, regs.DE);
@@ -778,7 +778,7 @@ auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void
         instructionCycles += JP<JP_C>(this);
         break;
     case 0xDC:
-        CALL<JP_C>(this);
+        instructionCycles += CALL<JP_C>(this);
         break;
     case 0xDE:
         SUBC<IMMEDIATE, u8>(this, read8(regs.PC++), true);

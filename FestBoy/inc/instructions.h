@@ -48,7 +48,7 @@ namespace gb
         4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
         4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
         4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
-        8, 12, 12, 16, 12, 16, 8, 16, 8, 16, 12, 4, 12, 24, 8, 16,
+        8, 12, 12, 16, 12, 16, 8, 16, 8, 16, 12, 0/*4*/, 12, 24, 8, 16,
         8, 12, 12, 0, 12, 16, 8, 16, 8, 16, 12, 0, 12, 0, 8, 16,
         12, 12, 8, 0, 0, 16, 8, 16, 16, 4, 16, 0, 0, 0, 8, 16,
         12, 12, 8, 4, 0, 16, 8, 16, 12, 8, 16, 4, 0, 0, 8, 16,
@@ -164,6 +164,7 @@ namespace gb
 
     static auto LD_HLSPi8(gb::SM83CPU* cpu, const s8& immediate) -> void
     {
+        u16 reg = cpu->regs.SP;
         cpu->regs.HL = cpu->regs.SP + immediate;
 
         u16 result = cpu->regs.HL;
@@ -171,8 +172,8 @@ namespace gb
 
         cpu->setFlag(gb::Z, 0);
         cpu->setFlag(gb::N, 0);
-        cpu->setFlag(gb::H, ((operand & 0x0F) + ((result - operand) & 0x0F)) > 0x0F);
-        cpu->setFlag(gb::C, ((operand & 0xFF) + ((result - operand) & 0xFF)) > 0xFF);
+        cpu->setFlag(gb::H, ((reg & 0x0F) + (immediate & 0x0F)) > 0x0F);
+        cpu->setFlag(gb::C, ((reg & 0xFF) + (immediate & 0xFF)) > 0xFF);
     }
 
     static auto ADD_HLrr(gb::SM83CPU* cpu, const u16& reg) -> void
@@ -440,7 +441,7 @@ namespace gb
     }
 
     template<JumpConditionFlags condition>
-    static auto CALL(gb::SM83CPU* cpu) -> void
+    static auto CALL(gb::SM83CPU* cpu) -> u8
     {
         u8 extraCycles = 0;
 
@@ -456,6 +457,8 @@ namespace gb
             PUSH(cpu, cpu->regs.PC);
             cpu->regs.PC = newAddress;
         }
+
+        return extraCycles;
     }
 
     static auto RET(gb::SM83CPU* cpu) -> void

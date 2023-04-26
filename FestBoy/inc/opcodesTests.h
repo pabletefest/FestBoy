@@ -4,7 +4,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include <istream>
+#include <fstream>
 #include <cassert>
 #include <array>
 #include <iostream>
@@ -13,7 +13,7 @@ auto testOpcode(gb::SM83CPU* cpu, u8 opcodeTest, bool extendedOpcode) -> void;
 
 auto testAllOpcodes(gb::SM83CPU* cpu) -> void
 {
-    for (u8 test = 0xBE; test < 256; test++)
+    for (int test = 0xF0; test < 256; test++)
     {
         if (test == 0xD3 || test == 0xDB || test == 0xDD || test == 0xE3 || test == 0xE4
             || test == 0xEB || test == 0xEC || test == 0xED || test == 0xF4 || test == 0xFC
@@ -22,7 +22,7 @@ auto testAllOpcodes(gb::SM83CPU* cpu) -> void
 
         if (test == 0xCB)
         {
-            for (u8 extendedTest = 0; extendedTest < 256; extendedTest++)
+            for (int extendedTest = 0; extendedTest < 256; extendedTest++)
                 testOpcode(cpu, extendedTest, true);
         }
         else
