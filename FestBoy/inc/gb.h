@@ -47,6 +47,7 @@ namespace gb
 
     public:
         bool IME = false;
+        bool pendingInterrupt = false;
 
         union InterruptEnableRegister
         {

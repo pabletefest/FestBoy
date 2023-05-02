@@ -68,22 +68,45 @@ auto gb::SM83CPU::reset() -> void
 
 auto gb::SM83CPU::clock() -> void
 {
+    /*if (cpuT_CyclesElapsed % 4 == 0)
+    {
+        printf("IME == %d\n", system->IME ? 1 : 0);
+        printf("IF == %02X\n", system->IF.reg);
+    }*/
+
     if (instructionCycles == 0) // Time to fetch and execute next opcode
     {
-        u8 opcode = read8(regs.PC++);
-        char msgLog[256];
-        sprintf(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
-        //printf(msgLog);
+        if (system->IME && (system->IF.reg & system->IE.reg & 0x1F))
+        {
+            //printf("\nExecuting interrupt service routine");
+            interruptServiceRoutine();
+        }
+        else
+        {
+            if (interruptEnablePending)
+            {
+                //printf("\nEI delayed finished, setting IME");
+                interruptEnablePending = false;
+                system->IME = true;
+            }
+
+            u8 opcode = read8(regs.PC++);
+            char msgLog[256];
+            sprintf_s(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
+            //printf(msgLog);
+            /*printf("\nExecuting %02X", opcode);
+            printf("\nIF == %02X", system->IF.reg);*/
 
 #if /*_DEBUG*/ 0
-        if (logFile.is_open())
-        {
-            logFile << std::string(msgLog);
-        }
+            if (logFile.is_open())
+            {
+                logFile << std::string(msgLog);
+            }
 #endif
-    
-        instructionCycles = instructionsCyclesTable[opcode];
-        decodeAndExecuteInstruction(opcode);
+
+            instructionCycles = instructionsCyclesTable[opcode];
+            decodeAndExecuteInstruction(opcode);
+        }
     }
 
     instructionCycles--;
@@ -98,6 +121,65 @@ auto gb::SM83CPU::checkPendingInterrupts() -> bool
         || (system->IE.Timer && system->IF.Timer)
         || (system->IE.Serial && system->IF.Serial)
         || (system->IE.Joypad && system->IF.Joypad);
+}
+
+auto gb::SM83CPU::interruptServiceRoutine() -> void
+{
+    if (cpuT_CyclesElapsed % 4 == 0) // During m-cycles
+    {
+        switch (interruptRoutineCycle % 5)
+        {
+        case 0:
+            read8(regs.PC++); // Cancelled fetch
+            break;
+        case 1:
+            regs.PC--; // Amend the PC increment after cancelled opcode fetch
+            break;
+        case 2:
+            write8(--regs.SP, (regs.PC >> 8) & 0x00FF);
+            break;
+        case 3:
+            write8(--regs.SP, regs.PC & 0x00FF);
+            break;
+        case 4:
+            u8 interrupts = system->IF.reg & system->IE.reg & 0x1F;
+
+            if (interrupts & 0x01) // VBlank
+            {
+                system->IF.reg &= ~0x01;
+                regs.PC = 0x0040;
+            }
+            else if (interrupts & 0x02) // STAT
+            {
+                system->IF.reg &= ~0x02;
+                regs.PC = 0x0048;
+            }
+            else if (interrupts & 0x04) // Timer
+            {
+                system->IF.reg &= ~0x04;
+                regs.PC = 0x0050;
+            }
+            else if (interrupts & 0x08) // Serial
+            {
+                system->IF.reg &= ~0x08;
+                regs.PC = 0x0058;
+            }
+            else if (interrupts & 0x10) // Joypad
+            {
+                system->IF.reg &= ~0x10;
+                regs.PC = 0x0060;
+            }
+
+            //system->pendingInterrupt = false;
+            system->IME = false;
+            break;
+        }
+
+        interruptRoutineCycle++;
+    }
+
+    //cpuT_CyclesElapsed++;
+    //cpuM_CyclesElapsed = cpuT_CyclesElapsed / 4;
 }
 
 auto gb::SM83CPU::decodeAndExecuteInstruction(u8 opcode) -> void

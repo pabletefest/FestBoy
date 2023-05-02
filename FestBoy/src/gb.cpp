@@ -39,10 +39,10 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         switch (address)
         {
         case 0xFFFF:
-            dataRead = 0xE0 | internalRAM[address];
+            dataRead = 0xE0 | IE.reg;
             break;
         case 0xFF0F:
-            dataRead = 0xE0 | internalRAM[address];
+            dataRead = 0xE0 | IF.reg;
             break;
         default:
             dataRead = internalRAM[address];
@@ -115,6 +115,20 @@ auto gb::GBConsole::reset() -> void
 
 auto gb::GBConsole::clock() -> void
 {
+    /*if (IME && (IF.reg & IE.reg & 0x1F))
+    {
+        pendingInterrupt = true;
+    }*/
+
+    /*if (IME && (IF.reg & IE.reg & 0x1F))
+    {
+        cpu.interruptServiceRoutine();
+    }
+    else
+    {
+        cpu.clock();
+    }*/
+
     cpu.clock();
 
     systemCyclesElapsed++;

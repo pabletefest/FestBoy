@@ -81,6 +81,10 @@ namespace gb
         }
 
         auto checkPendingInterrupts() -> bool;
+        auto interruptServiceRoutine() -> void;
+        inline auto isInterruptEnablePending() -> bool { return interruptEnablePending; };
+        inline auto setInterruptEnablePending() -> void { interruptEnablePending = true; };
+        inline auto discardInterruptEnablePending() -> void { interruptEnablePending = false; };
 
     private:
         auto decodeAndExecuteInstruction(u8 opcode) -> void;
@@ -93,7 +97,10 @@ namespace gb
         u64 cpuT_CyclesElapsed = 0;
         u64 cpuM_CyclesElapsed = 0;
 
-#if /*_DEBUG*/ 0
+        u8 interruptRoutineCycle = 0;
+        bool interruptEnablePending = false;
+
+#if _DEBUG /*0*/
         std::ofstream logFile;
 #endif
 

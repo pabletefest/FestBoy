@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     ifs1.open("cpu_log.txt");
 
     std::ifstream ifs2;
-    ifs2.open("tests/Gameboy-logs/Blargg8LYStubbed/EpicLog.txt");
+    ifs2.open("tests/Gameboy-logs/Blargg2LYStubbed/EpicLog.txt");
 
     if (ifs1.is_open() && ifs2.is_open())
     {
@@ -57,14 +57,14 @@ int main(int argc, char* argv[])
     }
 #endif
 
-    std::cout << "Hello CMake." << std::endl;
+    //std::cout << "Hello CMake." << std::endl;
 
     gb::GBConsole emulator;
 
     //testAllOpcodes(&emulator.getCPU());
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/01-special.gb");
-    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/02-interrupts.gb");
+    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/02-interrupts.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/03-op sp,hl.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/04-op r,imm.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/05-op rp.gb");
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/08-misc instrs.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/09-op r,r.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/10-bit ops.gb");
-    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/11-op a,(hl).gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/11-op a,(hl).gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();

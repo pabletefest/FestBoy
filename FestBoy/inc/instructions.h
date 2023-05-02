@@ -167,9 +167,6 @@ namespace gb
         u16 reg = cpu->regs.SP;
         cpu->regs.HL = cpu->regs.SP + immediate;
 
-        u16 result = cpu->regs.HL;
-        u16 operand = cpu->regs.SP + immediate;
-
         cpu->setFlag(gb::Z, 0);
         cpu->setFlag(gb::N, 0);
         cpu->setFlag(gb::H, ((reg & 0x0F) + (immediate & 0x0F)) > 0x0F);
@@ -372,12 +369,31 @@ namespace gb
 
     static auto EI(gb::GBConsole* console) -> void
     {
-        console->IME = true;
+        /*printf("\nIME == %d\n", console->IME ? 1 : 0);
+        printf("IF == %02X\n", console->IF.reg);
+
+        printf(" (Executing EI)\n");*/
+        //console->IME = true;
+        console->getCPU().setInterruptEnablePending();
+
+        /*printf("IME == %d\n", console->IME ? 1 : 0);
+        printf("IF == %02X\n", console->IF.reg);*/
     }
 
     static auto DI(gb::GBConsole* console) -> void
     {
+        /*printf("\nIME == %d\n", console->IME ? 1 : 0);
+        printf("IF == %02X\n", console->IF.reg);
+
+        printf(" (Executing DI)\n");*/
+
+        if (console->getCPU().isInterruptEnablePending())
+            console->getCPU().discardInterruptEnablePending();
+
         console->IME = false;
+
+        /*printf("IME == %d\n", console->IME ? 1 : 0);
+        printf("IF == %02X\n", console->IF.reg);*/
     }
 
     static auto JP(gb::SM83CPU* cpu, bool fromHL = false) -> void
