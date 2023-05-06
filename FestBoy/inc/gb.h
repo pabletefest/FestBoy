@@ -39,11 +39,14 @@ namespace gb
 
     private:
         SM83CPU cpu;
-        std::array<u8, convertKBToBytes(64)> internalRAM;
+        std::array<u8, convertKBToBytes(8)> wram;
 
         u64 systemCyclesElapsed = 0;
 
         Ref<GamePak> gamePak;
+
+        u8 SB_register; // Serial transfer data register
+        u8 SC_register; // Serial transfer control register
 
     public:
         bool IME = false;
