@@ -12,12 +12,14 @@
 #include <iostream>
 
 gb::GBConsole::GBConsole()
-    : cpu(this), IE({}), IF({})
+    : cpu(this), IE({}), IF({}), timer(this)
 {
     /*for (auto& item : internalRAM)
         item = 0x00;*/
 
     std::memset(wram.data(), 0x00, wram.size());
+    std::memset(hram.data(), 0x00, hram.size());
+    std::memset(internalRAM.data(), 0x00, internalRAM.size());
     //cpu.debugRAM = internalRAM.data();
 }
 
@@ -36,11 +38,11 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     }
     else if (address >= 0x8000 && address <= 0x9FFF)
     {
-
+        dataRead = internalRAM[address];
     }
     else if (address >= 0xA000 && address <= 0xBFFF)
     {
-
+        dataRead = internalRAM[address];
     }
     else if (address >= 0xC000 && address <= 0xDFFF)
     {
@@ -49,6 +51,14 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     else if (address >= 0xE000 && address <= 0xFDFF) // (ECHO RAM)
     {
         dataRead = wram[address & 0x1DFF];
+    }
+    else if (address >= 0xFE00 && address <= 0xFE9F)
+    {
+        dataRead = internalRAM[address];
+    }
+    else if (address >= 0xFEA0 && address <= 0xFEFF)
+    {
+        dataRead = internalRAM[address];
     }
     else if (address >= 0xFF00 && address <= 0xFF7F)// IO Registers
     {
@@ -60,20 +70,40 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         case 0xFF02:
             dataRead = SC_register;
             break;
+        case 0xFF04:
+            dataRead = timer.read(address);
+            break;
+        case 0xFF05:
+            dataRead = timer.read(address);
+            break;
+        case 0xFF06:
+            dataRead = timer.read(address);
+            break;
+        case 0xFF07:
+            dataRead = timer.read(address);
+            break;
         case 0xFF0F:
             dataRead = 0xE0 | IF.reg;
             break;
         case 0xFF44:
             dataRead = 0x90;
             break;
-        /*default:
+        default:
             dataRead = internalRAM[address];
-            break;*/
+            break;
         }
+    }
+    else if (address >= 0xFF80 && address <= 0xFFFE)
+    {
+        dataRead = hram[address & 0x007F];
     }
     else if (address == 0xFFFF)
     {
         dataRead = 0xE0 | IE.reg;
+    }
+    else
+    {
+        __debugbreak();
     }
 
     return dataRead;
@@ -99,11 +129,11 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     }
     else if (address >= 0x8000 && address <= 0x9FFF)
     {
-
+        internalRAM[address] = data;
     }
     else if (address >= 0xA000 && address <= 0xBFFF)
     {
-
+        internalRAM[address] = data;
     }
     else if (address >= 0xC000 && address <= 0xDFFF)
     {
@@ -113,25 +143,58 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         wram[address & 0x1DFF] = data;
     }
+    else if (address >= 0xFE00 && address <= 0xFE9F)
+    {
+        internalRAM[address] = data;
+    }
+    else if (address >= 0xFEA0 && address <= 0xFEFF)
+    {
+        internalRAM[address] = data;
+    }
     else if (address >= 0xFF00 && address <= 0xFF7F)// IO Registers
     {
         switch (address)
         {
         case 0xFF01:
-            SC_register = data;
+            SB_register = data;
             break;
         case 0xFF02:
             if (data == 0x81)
                 printf("%c", /*internalRAM[0xFF01]*/ SB_register);
+
+            SC_register = data;
+            break;
+        case 0xFF04:
+            timer.write(address, data);
+            break;
+        case 0xFF05:
+            timer.write(address, data);
+            break;
+        case 0xFF06:
+            timer.write(address, data);
+            break;
+        case 0xFF07:
+            timer.write(address, data);
             break;
         case 0xFF0F:
             IF.reg = data;
             break;
+        default:
+            internalRAM[address] = data;
+            break;
         }
+    }
+    else if (address >= 0xFF80 && address <= 0xFFFE)
+    {
+        hram[address & 0x007F] = data;
     }
     else if (address == 0xFFFF)
     {
         IE.reg = data;
+    }
+    else
+    {
+        __debugbreak();
     }
 }
 
@@ -155,6 +218,7 @@ auto gb::GBConsole::reset() -> void
 
     // TEMP for tests
     cpu.regs.PC = 0x0100;
+    timer.setDIVtoSkippedBootromValue();
     //internalRAM[0xFF44] = 0x90;
 }
 
@@ -174,7 +238,24 @@ auto gb::GBConsole::clock() -> void
         cpu.clock();
     }*/
 
-    cpu.clock();
+    timer.clock();
+
+    if (isHaltMode)
+    {
+        if (checkPendingInterrupts())
+        {
+            isHaltMode = false;
+
+            if (IME)
+            {
+                cpu.interruptServiceRoutine();
+            }
+        }
+    }
+    else
+    {
+        cpu.clock();
+    }
 
     systemCyclesElapsed++;
 }
@@ -183,4 +264,26 @@ auto gb::GBConsole::step(u64 numberCycles) -> void
 {
     for (size_t i = 0; i < numberCycles; i++)
         clock();
+}
+
+auto gb::GBConsole::requestInterrupt(InterruptType type) -> void
+{
+    switch (type)
+    {
+    case InterruptType::VBlank:
+        IF.VBlank = 1;
+        break;
+    case InterruptType::STAT:
+        IF.LCD_STAT = 1;
+        break;
+    case InterruptType::Timer:
+        IF.Timer = 1;
+        break;
+    case InterruptType::Serial:
+        IF.Serial = 1;
+        break;
+    case InterruptType::Joypad:
+        IF.Joypad = 1;
+        break;
+    }
 }

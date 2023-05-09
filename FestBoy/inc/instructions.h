@@ -515,12 +515,14 @@ namespace gb
 
     static auto HALT(gb::SM83CPU* cpu) -> void
     {
-        while (!cpu->checkPendingInterrupts());
+        //while (!cpu->checkPendingInterrupts());
 
-        if (cpu->system->IME)
-        {
-            // TODO
-        }
+        //if (cpu->system->IME)
+        //{
+        //    // TODO
+        //}
+
+        cpu->system->enterHaltMode();
     }
 
     static auto STOP() -> void

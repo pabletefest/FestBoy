@@ -106,6 +106,9 @@ auto gb::SM83CPU::clock() -> void
 
             instructionCycles = instructionsCyclesTable[opcode];
             decodeAndExecuteInstruction(opcode);
+
+            /*for (int i = 0; i < instructionCycles; i++)
+                system->getTimer().clock();*/
         }
     }
 
