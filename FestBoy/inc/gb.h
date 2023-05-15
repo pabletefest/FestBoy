@@ -10,6 +10,7 @@
 #include "cpu_sm83.h"
 #include "game_pack.h"
 #include "timer.h"
+#include "ppu.h"
 
 #include <array>
 
@@ -70,6 +71,8 @@ namespace gb
 
         Timer timer;
         bool isHaltMode = false;
+
+        PPU ppu;
 
     public:
         bool IME = false;
