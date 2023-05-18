@@ -21,5 +21,41 @@ public:
     auto clock() -> void;
 
 private:
+    u8 LY = 0x00;
+    u8 currentDot = 0x00;
+    u8 remainingDots = 456; // Max dots per scanline
+    u8 lastMode3Dot = 0;
 
+    union LCDC
+    {
+        struct
+        {
+            u8 BGWindEnablePriority : 1;
+            u8 OBJenable : 1;
+            u8 OBJsize : 1;
+            u8 BGtileMapArea : 1;
+            u8 BGWindTileDataArea : 1;
+            u8 WindowEnable : 1;
+            u8 WindowTileMapArea : 1;
+            u8 LCDenable : 1;
+        };
+
+        u8 reg;
+    }LCDControl;
+
+    union STAT
+    {
+        struct
+        {
+            u8 ModeFlag : 2;
+            u8 LYCLY_Flag : 1;
+            u8 Mode0STATIntrSrc : 1;
+            u8 Mode1STATIntrSrc : 1;
+            u8 Mode2STATIntrSrc : 1;
+            u8 LYCLYSTATIntrSrc : 1;
+            u8 unused : 1;
+        };
+
+        u8 reg;
+    }LCDStatus;
 };
