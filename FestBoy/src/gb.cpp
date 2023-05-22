@@ -38,7 +38,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     }
     else if (address >= 0x8000 && address <= 0x9FFF)
     {
-        dataRead = internalRAM[address];
+        dataRead = ppu.read(address);
     }
     else if (address >= 0xA000 && address <= 0xBFFF)
     {
@@ -54,7 +54,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     }
     else if (address >= 0xFE00 && address <= 0xFE9F)
     {
-        dataRead = internalRAM[address];
+        dataRead = ppu.read(address);
     }
     else if (address >= 0xFEA0 && address <= 0xFEFF)
     {
@@ -85,8 +85,18 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         case 0xFF0F:
             dataRead = 0xE0 | IF.reg;
             break;
+        case 0xFF40:
+            dataRead = ppu.read(address);
+            break;
+        case 0xFF41:
+            dataRead = ppu.read(address);
+            break;
         case 0xFF44:
-            dataRead = 0x90;
+            dataRead = ppu.read(address);
+            dataRead = 0x90; // Placeholder
+            break;
+        case 0xFF45:
+            dataRead = ppu.read(address);
             break;
         default:
             dataRead = internalRAM[address];
@@ -129,7 +139,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     }
     else if (address >= 0x8000 && address <= 0x9FFF)
     {
-        internalRAM[address] = data;
+        ppu.write(address, data);
     }
     else if (address >= 0xA000 && address <= 0xBFFF)
     {
@@ -145,7 +155,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     }
     else if (address >= 0xFE00 && address <= 0xFE9F)
     {
-        internalRAM[address] = data;
+        ppu.write(address, data);
     }
     else if (address >= 0xFEA0 && address <= 0xFEFF)
     {
@@ -178,6 +188,15 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
             break;
         case 0xFF0F:
             IF.reg = data;
+            break;
+        case 0xFF40:
+            ppu.write(address, data);
+            break;
+        case 0xFF41:
+            ppu.write(address, data);
+            break;
+        case 0xFF45:
+            ppu.write(address, data);
             break;
         default:
             internalRAM[address] = data;

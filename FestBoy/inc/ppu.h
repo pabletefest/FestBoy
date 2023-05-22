@@ -7,6 +7,7 @@
 
 #pragma once
 #include "emu_typedefs.h"
+#include <array>
 
 class PPU
 {
@@ -21,9 +22,13 @@ public:
     auto clock() -> void;
 
 private:
+    std::array<u8, 8_KB> VRAM;
+    std::array<u8, 160> OAM;
+
     u8 LY = 0x00;
+    u8 LYC = 0x00;
     u8 currentDot = 0x00;
-    u8 remainingDots = 456; // Max dots per scanline
+    u16 remainingDots = 456; // Max dots per scanline
     u8 lastMode3Dot = 0;
 
     union LCDC
@@ -41,7 +46,7 @@ private:
         };
 
         u8 reg;
-    }LCDControl;
+    }LCDControl = {};
 
     union STAT
     {
@@ -57,5 +62,5 @@ private:
         };
 
         u8 reg;
-    }LCDStatus;
+    }LCDStatus = {};
 };

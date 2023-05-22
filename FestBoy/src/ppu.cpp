@@ -1,16 +1,69 @@
 #include "ppu.h"
 
 PPU::PPU()
+    : LCDControl({}), LCDStatus({})
 {
 }
 
 auto PPU::read(u16 address) -> u8
 {
-    return u8();
+    u8 dataRead = 0x00;
+
+    if (address >= 0x8000 && address <= 0x9FFF)
+    {
+        dataRead = VRAM[address & 0x1FFF];
+    }
+    else if (address >= 0xFE00 && address <= 0xFE9F)
+    {
+        dataRead = OAM[address & 0x9F];
+    }
+    else
+    {
+        switch (address)
+        {
+        case 0xFF40:
+            dataRead = LCDControl.reg;
+            break;
+        case 0xFF41:
+            dataRead = LCDStatus.reg | 0x10; // No bit 7 so always read as a 1
+            break;
+        case 0xFF44:
+            dataRead = LY;
+            break;
+        case 0xFF45:
+            dataRead = LYC;
+            break;
+        }
+    }
+
+    return dataRead;
 }
 
 auto PPU::write(u16 address, u8 data) -> void
 {
+    if (address >= 0x8000 && address <= 0x9FFF)
+    {
+        VRAM[address & 0x1FFF] = data;
+    }
+    else if (address >= 0xFE00 && address <= 0xFE9F)
+    {
+        OAM[address & 0x9F] = data;
+    }
+    else
+    {
+        switch (address)
+        {
+        case 0xFF40:
+            LCDControl.reg = data;
+            break;
+        case 0xFF41:
+            LCDStatus.reg |= (data & 0x71); // Only bits 6, 5, 4, and 3 are writable
+            break;
+        case 0xFF45:
+            LYC = data;
+            break;
+        }
+    }
 }
 
 auto PPU::reset() -> void
