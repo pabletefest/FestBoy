@@ -24,7 +24,7 @@ constexpr inline std::size_t operator"" _MB(std::size_t number) { return 1024_KB
 constexpr inline std::size_t operator"" _GB(std::size_t number) { return 1024_MB * number; }
 
 template <typename T>
-std::vector<T> LoadBinary(const std::filesystem::path& path) // const char* path
+std::vector<T> loadBinary(const std::filesystem::path& path) // const char* path
 {
     std::basic_ifstream<T> file{ path, std::ios::binary };
     return { std::istreambuf_iterator<T>{ file }, {} };
