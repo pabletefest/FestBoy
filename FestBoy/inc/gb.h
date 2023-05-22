@@ -7,6 +7,7 @@
 
 #pragma once
 #include "emu_typedefs.h"
+#include "util_funcs.h"
 #include "cpu_sm83.h"
 #include "game_pack.h"
 #include "timer.h"

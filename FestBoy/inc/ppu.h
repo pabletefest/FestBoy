@@ -7,6 +7,7 @@
 
 #pragma once
 #include "emu_typedefs.h"
+#include "util_funcs.h"
 #include <array>
 
 class PPU

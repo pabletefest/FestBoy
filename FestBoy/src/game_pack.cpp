@@ -7,6 +7,7 @@
 
 #include "game_pack.h"
 #include "no_mbc.h"
+#include "util_funcs.h"
 
 #include <fstream>
 

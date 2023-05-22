@@ -72,30 +72,41 @@ auto PPU::reset() -> void
 
 auto PPU::clock() -> void
 {
+    if (LYC == LY)
+    {
+        // TODO
+    }
+
     if (LY >= 0 && LY <= 143)
     {
         // Mode 2 (OAM search)
         if (currentDot >= 0 && currentDot <= 79)
         {
+            if (currentDot == 0)
+                LCDStatus.ModeFlag = 2;
+
             lastMode3Dot = 168 + 80 - 1;// Min number of dots is 168 (placeholder)
         }
 
         // Mode 3 (Rendering picture)
         if (currentDot >= 80 && currentDot <= lastMode3Dot)
         {
-
+            if (currentDot == 80)
+                LCDStatus.ModeFlag = 3;
         }
 
         // Mode 0 (HBlank period)
         if ((currentDot >= (lastMode3Dot + 1)) && (currentDot <= (remainingDots - 1)))
         {
-
+            if (currentDot == (lastMode3Dot + 1))
+                LCDStatus.ModeFlag = 0;
         }
     }
     else
     {
         // Mode 1 (VBlank period)
-
+        if (LY == 144)
+            LCDStatus.ModeFlag = 1;
     }
 
     currentDot++;
