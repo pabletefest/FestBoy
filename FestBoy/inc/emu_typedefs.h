@@ -56,3 +56,7 @@ constexpr INLINE u64 convertKBToBytes(u32 KB) { return static_cast<u64>(KB) * 10
 
 template<typename T>
 constexpr INLINE T convertKBToBytes(u32 KB) { return static_cast<T>(KB) * 1024; }
+
+constexpr inline std::size_t operator"" _KB(std::size_t number) { return 1024ULL * number; }
+constexpr inline std::size_t operator"" _MB(std::size_t number) { return 1024_KB * number; }
+constexpr inline std::size_t operator"" _GB(std::size_t number) { return 1024_MB * number; }
