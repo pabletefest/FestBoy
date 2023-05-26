@@ -98,6 +98,9 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         case 0xFF45:
             dataRead = ppu.read(address);
             break;
+        case 0xFF47:
+            dataRead = ppu.read(address);
+            break;
         default:
             dataRead = internalRAM[address];
             break;
@@ -196,6 +199,9 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
             ppu.write(address, data);
             break;
         case 0xFF45:
+            ppu.write(address, data);
+            break;
+        case 0xFF47:
             ppu.write(address, data);
             break;
         default:

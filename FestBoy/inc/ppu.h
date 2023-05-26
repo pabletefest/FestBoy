@@ -23,6 +23,14 @@ public:
     auto clock() -> void;
 
 private:
+    struct Pixel
+    {
+        u8 B;
+        u8 G;
+        u8 R;
+    };
+
+    std::array<Pixel, 160 * 144> pixelsBuffer;
     std::array<u8, 8_KB> VRAM;
     std::array<u8, 160> OAM;
 
@@ -64,4 +72,6 @@ private:
 
         u8 reg;
     }LCDStatus = {};
+
+    u8 bgPaletteData = 0x00;
 };

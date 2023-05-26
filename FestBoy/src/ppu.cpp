@@ -33,6 +33,9 @@ auto PPU::read(u16 address) -> u8
         case 0xFF45:
             dataRead = LYC;
             break;
+        case 0xFF47:
+            dataRead = bgPaletteData;
+            break;
         }
     }
 
@@ -62,6 +65,9 @@ auto PPU::write(u16 address, u8 data) -> void
         case 0xFF45:
             LYC = data;
             break;
+        case 0xFF47:
+            bgPaletteData = data;
+            break;
         }
     }
 }
@@ -85,7 +91,7 @@ auto PPU::clock() -> void
             if (currentDot == 0)
                 LCDStatus.ModeFlag = 2;
 
-            lastMode3Dot = 168 + 80 - 1;// Min number of dots is 168 (placeholder)
+            lastMode3Dot = 174 + 80 - 1;// Min number of dots is 168-174 according to different sources (174 placeholder for now)
         }
 
         // Mode 3 (Rendering picture)
