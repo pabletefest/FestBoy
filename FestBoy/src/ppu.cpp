@@ -1,20 +1,27 @@
 #include "ppu.h"
+#include "gb.h"
 
-PPU::PPU()
-    : LCDControl({}), LCDStatus({})
+gb::PPU::PPU(GBConsole* device)
+    : system(device), LCDControl({}), LCDStatus({})
 {
 }
 
-auto PPU::read(u16 address) -> u8
+auto gb::PPU::read(u16 address) -> u8
 {
     u8 dataRead = 0x00;
 
     if (address >= 0x8000 && address <= 0x9FFF)
     {
+        if (LCDStatus.ModeFlag == 3)
+            return 0xFF;
+
         dataRead = VRAM[address & 0x1FFF];
     }
     else if (address >= 0xFE00 && address <= 0xFE9F)
     {
+        if (LCDStatus.ModeFlag == 3 || LCDStatus.ModeFlag == 2)
+            return 0xFF;
+
         dataRead = OAM[address & 0x9F];
     }
     else
@@ -28,6 +35,9 @@ auto PPU::read(u16 address) -> u8
             dataRead = LCDStatus.reg | 0x10; // No bit 7 so always read as a 1
             break;
         case 0xFF44:
+            if (!LCDControl.LCDenable)
+                LY = 0x00;
+
             dataRead = LY;
             break;
         case 0xFF45:
@@ -42,14 +52,20 @@ auto PPU::read(u16 address) -> u8
     return dataRead;
 }
 
-auto PPU::write(u16 address, u8 data) -> void
+auto gb::PPU::write(u16 address, u8 data) -> void
 {
     if (address >= 0x8000 && address <= 0x9FFF)
     {
+        if (LCDStatus.ModeFlag == 3)
+            return;
+
         VRAM[address & 0x1FFF] = data;
     }
     else if (address >= 0xFE00 && address <= 0xFE9F)
     {
+        if (LCDStatus.ModeFlag == 3 || LCDStatus.ModeFlag == 2)
+            return;
+
         OAM[address & 0x9F] = data;
     }
     else
@@ -72,11 +88,11 @@ auto PPU::write(u16 address, u8 data) -> void
     }
 }
 
-auto PPU::reset() -> void
+auto gb::PPU::reset() -> void
 {
 }
 
-auto PPU::clock() -> void
+auto gb::PPU::clock() -> void
 {
     if (LYC == LY)
     {
@@ -112,7 +128,10 @@ auto PPU::clock() -> void
     {
         // Mode 1 (VBlank period)
         if (LY == 144)
+        {
             LCDStatus.ModeFlag = 1;
+            system->requestInterrupt(gb::GBConsole::InterruptType::VBlank);
+        }
     }
 
     currentDot++;
