@@ -52,6 +52,7 @@ namespace gb
         }
 
         auto requestInterrupt(InterruptType type) -> void;
+        auto getInterruptState(InterruptType type) -> u8;
         inline auto checkPendingInterrupts() -> u8 { return IE.reg & IF.reg & 0x1F; }
         inline auto enterHaltMode() -> void { isHaltMode = true; }
 

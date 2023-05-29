@@ -94,9 +94,16 @@ auto gb::PPU::reset() -> void
 
 auto gb::PPU::clock() -> void
 {
-    if (LYC == LY)
+    // STAT Interrupt only triggered in rising edge, that is from low 0 to high 1
+    if (!system->getInterruptState(gb::GBConsole::InterruptType::STAT) && LCDControl.LCDenable)
     {
-        // TODO
+        if (((LYC == LY) && LCDStatus.LYCLYSTATIntrSrc) || 
+            (LCDStatus.ModeFlag == 0 && LCDStatus.Mode0STATIntrSrc) ||
+            (LCDStatus.ModeFlag == 2 && LCDStatus.Mode2STATIntrSrc) ||
+            (LCDStatus.ModeFlag == 1 && LCDStatus.Mode1STATIntrSrc))
+        {
+            system->requestInterrupt(gb::GBConsole::InterruptType::STAT);
+        }
     }
 
     if (LY >= 0 && LY <= 143)

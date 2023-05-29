@@ -12,7 +12,7 @@
 #include <iostream>
 
 gb::GBConsole::GBConsole()
-    : cpu(this), IE({}), IF({}), timer(this)
+    : cpu(this), IE({}), IF({}), timer(this), ppu(this)
 {
     /*for (auto& item : internalRAM)
         item = 0x00;*/
@@ -309,6 +309,28 @@ auto gb::GBConsole::requestInterrupt(InterruptType type) -> void
         break;
     case InterruptType::Joypad:
         IF.Joypad = 1;
+        break;
+    }
+}
+
+auto gb::GBConsole::getInterruptState(InterruptType type) -> u8
+{
+    switch (type)
+    {
+    case InterruptType::VBlank:
+        return IF.VBlank;
+        break;
+    case InterruptType::STAT:
+        return IF.LCD_STAT;
+        break;
+    case InterruptType::Timer:
+        return IF.Timer;
+        break;
+    case InterruptType::Serial:
+        return IF.Serial;
+        break;
+    case InterruptType::Joypad:
+        return IF.Joypad;
         break;
     }
 }
