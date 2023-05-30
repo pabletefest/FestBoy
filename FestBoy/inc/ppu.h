@@ -29,14 +29,15 @@ namespace gb
     public:
         GBConsole* system = nullptr;
 
-    private:
         struct Pixel
         {
-            u8 B;
-            u8 G;
+            // We use this order for convenience
             u8 R;
+            u8 G;
+            u8 B;
         };
 
+    private:
         std::array<Pixel, 160 * 144> pixelsBuffer = {};
         std::array<u8, 8_KB> VRAM = {};
         std::array<u8, 160> OAM = {};

@@ -3,8 +3,10 @@
 
 namespace gb
 {
-    // "$8000 and $8800 addressing modes to access BG and Window Tile Data"
-    static constexpr u16 vramAddressingMode[2][2] = { { 0x8000, 0x8800 }, { 0x9000, 0x8800 } };
+    // "$8800 (LCD Control bit 4 is 0) and $8000 (LCD Control bit 4 is 1) addressing modes to access BG and Window Tile Data"
+    static constexpr u16 vramAddressingMode[2][2] = { { 0x9000, 0x8800 }, { 0x8000, 0x8800 } };
+
+    static constexpr PPU::Pixel greenShadesRGBPalette[4] = { { 155, 188, 15 }, { 139, 172, 15 }, { 48, 98, 48 }, { 15, 56, 15 } };
 }
 
 gb::PPU::PPU(GBConsole* device)
@@ -131,6 +133,13 @@ auto gb::PPU::clock() -> void
         {
             if (currentDot == 80)
                 LCDStatus.ModeFlag = 3;
+
+            // Render the line in the last dot before HBlank (scanline renderer)
+            if (currentDot == lastMode3Dot)
+            {
+                const u16* addressingMode = vramAddressingMode[LCDControl.BGWindTileDataArea];
+
+            }
         }
 
         // Mode 0 (HBlank period)
