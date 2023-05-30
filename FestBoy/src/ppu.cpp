@@ -7,6 +7,7 @@ namespace gb
     static constexpr u16 vramAddressingMode[2][2] = { { 0x9000, 0x8800 }, { 0x8000, 0x8800 } };
 
     static constexpr PPU::Pixel greenShadesRGBPalette[4] = { { 155, 188, 15 }, { 139, 172, 15 }, { 48, 98, 48 }, { 15, 56, 15 } };
+    static constexpr PPU::Pixel greyShadesRGBPalette[4] = { { 255, 255, 255 }, { 169, 169, 169 }, { 84, 84, 84 }, { 0, 0, 0 } };
 }
 
 gb::PPU::PPU(GBConsole* device)
