@@ -75,6 +75,8 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/10-bit ops.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/11-op a,(hl).gb");
     Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
+
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();
