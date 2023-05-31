@@ -5,9 +5,15 @@ namespace gb
 {
     // "$8800 (LCD Control bit 4 is 0) and $8000 (LCD Control bit 4 is 1) addressing modes to access BG and Window Tile Data"
     static constexpr u16 vramAddressingMode[2][2] = { { 0x9000, 0x8800 }, { 0x8000, 0x8800 } };
+    static constexpr u16 tileMapAddress[2] = { 0x9800, 0x9C00 };
 
     static constexpr PPU::Pixel greenShadesRGBPalette[4] = { { 155, 188, 15 }, { 139, 172, 15 }, { 48, 98, 48 }, { 15, 56, 15 } };
     static constexpr PPU::Pixel greyShadesRGBPalette[4] = { { 255, 255, 255 }, { 169, 169, 169 }, { 84, 84, 84 }, { 0, 0, 0 } };
+
+    static constexpr u8 TILES_PER_LINE = 20;
+    static constexpr u8 NUMBER_OF_TILE_LINES = 18;
+    static constexpr u8 PIXELS_PER_LINE = 160;
+    static constexpr u8 NUMBER_OF_LINES = 144;
 }
 
 gb::PPU::PPU(GBConsole* device)
@@ -138,8 +144,28 @@ auto gb::PPU::clock() -> void
             // Render the line in the last dot before HBlank (scanline renderer)
             if (currentDot == lastMode3Dot)
             {
+                u8 tileLine = LY / 8;
                 const u16* addressingMode = vramAddressingMode[LCDControl.BGWindTileDataArea];
+                const u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32);
 
+                for (int tileIndex = 0; tileIndex < TILES_PER_LINE; tileIndex++)
+                {
+                    u8 tileId = read(bgTileMapAddress);
+                    u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);
+                    u8 lowByteTileData = read(tileDataAddress);
+                    u8 highByteTileData = read(tileDataAddress + 1);
+
+                    for (int pixelIndex = 0; pixelIndex < 8; pixelIndex++)
+                    {
+                        u8 lowBit = (lowByteTileData >> (7 - pixelIndex)) & 1;
+                        u8 highBit = (highByteTileData >> (7 - pixelIndex)) & 1;
+                        u8 paletteColorIndex = ((highBit << 1) | lowBit) & 0b11;
+                        u8 colorPixel = (bgPaletteData >> (paletteColorIndex * 2)) & 0b11;
+
+                        std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (tileIndex * 8) + pixelIndex;
+                        pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel];
+                    }
+                }
             }
         }
 
