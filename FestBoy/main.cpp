@@ -11,9 +11,12 @@
 #include "cpu_sm83.h"
 #include "game_pack.h"
 #include "opcodesTests.h"
+#include "ppu.h"
 
 #include <iostream>
 #include <SDL.h>
+
+static constexpr const char* EMU_TITLE = "FestBoy - A GameBoy emulator";
 
 int main(int argc, char* argv[])
 {
@@ -68,54 +71,61 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/03-op sp,hl.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/04-op r,imm.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/05-op rp.gb");
-    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/06-ld r,r.gb");
+    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/06-ld r,r.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/08-misc instrs.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/09-op r,r.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/10-bit ops.gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/11-op a,(hl).gb");
-    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();
 
-    //SDL_Window* window;
-    //SDL_Renderer* renderer;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
 
-    //// Initialize SDL.
-    //if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    //    return 1;
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        std::cout << "Video Initialization Error: " << SDL_GetError() << "\n";
+        return 1;
+    }
 
-    //// Create the window where we will draw.
-    //window = SDL_CreateWindow("SDL_RenderClear",
-    //    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-    //    512, 512,
-    //    0);
+    window = SDL_CreateWindow(EMU_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 720, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
-    //// We must call SDL_CreateRenderer in order for draw calls to affect this window.
-    //renderer = SDL_CreateRenderer(window, -1, 0);
+    if (!window)
+    {
+        std::cout << "Window Creation Error: " << SDL_GetError() << "\n";
+        return 0;
+    }
+
+    //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, SDL_LINEAR_FILTERING);
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED );
+
+    SDL_Texture* gameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 
     while (true)
     {
-        emulator.clock();
-        //// Select the color for drawing. It is set to random here.
-        //SDL_SetRenderDrawColor(renderer, rand() % 256, rand() % 256, rand() % 256, 255);
+        do
+        {
+            emulator.clock();
+        } while (!emulator.getPPU().frameCompleted);
 
-        //// Clear the entire screen to our selected color.
-        //SDL_RenderClear(renderer);
+        emulator.getPPU().frameCompleted = false;
 
-        //// Up until now everything was drawn behind the scenes.
-        //// This will show the new, red contents of the window.
-        //SDL_RenderPresent(renderer);
+        SDL_UpdateTexture(gameTexture, nullptr, emulator.getPPU().getPixelsBufferData(), sizeof(gb::PPU::Pixel) * 160);
 
-        //// Give us time to see the window.
-        //SDL_Delay(1);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, gameTexture, NULL, NULL);
+        SDL_RenderPresent(renderer);
     }
 
     // Always be sure to clean up
-    //SDL_Quit();
+    SDL_Quit();
 
 	return 0;
 }

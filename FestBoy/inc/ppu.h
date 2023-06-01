@@ -17,6 +17,15 @@ namespace gb
     class PPU
     {
     public:
+        struct Pixel
+        {
+            // We use this order for convenience
+            u8 R;
+            u8 G;
+            u8 B;
+        };
+
+    public:
         PPU(GBConsole* device);
         ~PPU() = default;
 
@@ -26,16 +35,12 @@ namespace gb
         auto reset() -> void;
         auto clock() -> void;
 
+        inline auto getPixelsBufferData() const -> const PPU::Pixel* { return pixelsBuffer.data(); }
+        inline auto getPixelsBuffer() -> std::array<Pixel, 160 * 144>& { return pixelsBuffer; }
+
     public:
         GBConsole* system = nullptr;
-
-        struct Pixel
-        {
-            // We use this order for convenience
-            u8 R;
-            u8 G;
-            u8 B;
-        };
+        bool frameCompleted = false;
 
     private:
         std::array<Pixel, 160 * 144> pixelsBuffer = {};
@@ -44,9 +49,9 @@ namespace gb
 
         u8 LY = 0x00;
         u8 LYC = 0x00;
-        u8 currentDot = 0x00;
+        u16 currentDot = 0x00;
         u16 remainingDots = 456; // Max dots per scanline
-        u8 lastMode3Dot = 0;
+        u16 lastMode3Dot = 0;
 
         union LCDC
         {

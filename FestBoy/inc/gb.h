@@ -41,15 +41,9 @@ namespace gb
         auto clock() -> void;
         auto step(u64 numberCycles) -> void;
 
-        inline auto getCPU() -> SM83CPU&
-        {
-            return cpu;
-        }
-
-        inline auto getTimer() -> Timer&
-        {
-            return timer;
-        }
+        inline auto getCPU() -> SM83CPU& { return cpu;  }
+        inline auto getTimer() -> Timer& { return timer; }
+        inline auto getPPU() -> PPU& { return ppu; }
 
         auto requestInterrupt(InterruptType type) -> void;
         auto getInterruptState(InterruptType type) -> u8;

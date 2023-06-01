@@ -19,6 +19,8 @@ namespace gb
 gb::PPU::PPU(GBConsole* device)
     : system(device), LCDControl({}), LCDStatus({})
 {
+    std::memset(VRAM.data(), 0x00, VRAM.size());
+    std::memset(OAM.data(), 0x00, OAM.size());
 }
 
 auto gb::PPU::read(u16 address) -> u8
@@ -162,8 +164,11 @@ auto gb::PPU::clock() -> void
                         u8 paletteColorIndex = ((highBit << 1) | lowBit) & 0b11;
                         u8 colorPixel = (bgPaletteData >> (paletteColorIndex * 2)) & 0b11;
 
-                        std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (tileIndex * 8) + pixelIndex;
-                        pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel];
+                        // (tileLine * 8 + (LY % 8)) * PIXELS_PER_LINE == LY * PIXELS_PER_LINE
+                        std::size_t bufferIndex = ((tileLine * 8 + (LY % 8)) * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
+                        pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel & 0b11];
+
+                        //printf("Writting pixel %d of tile %d. Line: %d - Dot: %d\n", pixelIndex, tileIndex, LY, (tileIndex * 8) + pixelIndex);
                     }
                 }
             }
@@ -179,10 +184,10 @@ auto gb::PPU::clock() -> void
     else
     {
         // Mode 1 (VBlank period)
-        if (LY == 144)
+        if (LY == 144 && currentDot == 0)
         {
             LCDStatus.ModeFlag = 1;
-            system->requestInterrupt(gb::GBConsole::InterruptType::VBlank);
+             system->requestInterrupt(gb::GBConsole::InterruptType::VBlank);
         }
     }
 
@@ -197,6 +202,7 @@ auto gb::PPU::clock() -> void
         if (LY == 154)
         {
             LY = 0;
+            frameCompleted = true;
         }
     }
 }

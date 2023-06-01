@@ -93,7 +93,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
             break;
         case 0xFF44:
             dataRead = ppu.read(address);
-            dataRead = 0x90; // Placeholder
+            //dataRead = 0x90; // Placeholder
             break;
         case 0xFF45:
             dataRead = ppu.read(address);
@@ -263,6 +263,7 @@ auto gb::GBConsole::clock() -> void
         cpu.clock();
     }*/
 
+    ppu.clock();
     timer.clock();
 
     if (isHaltMode)
