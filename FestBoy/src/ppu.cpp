@@ -147,13 +147,15 @@ auto gb::PPU::clock() -> void
             if (currentDot == lastMode3Dot)
             {
                 u8 tileLine = LY / 8;
+                u8 tileY = LY % 8;
                 const u16* addressingMode = vramAddressingMode[LCDControl.BGWindTileDataArea];
-                const u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32);
+                u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32);
 
                 for (int tileIndex = 0; tileIndex < TILES_PER_LINE; tileIndex++)
                 {
                     u8 tileId = read(bgTileMapAddress);
-                    u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);
+                    u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);                  
+                    tileDataAddress += (tileId * 16) + (tileY * 2);
                     u8 lowByteTileData = read(tileDataAddress);
                     u8 highByteTileData = read(tileDataAddress + 1);
 
@@ -164,12 +166,14 @@ auto gb::PPU::clock() -> void
                         u8 paletteColorIndex = ((highBit << 1) | lowBit) & 0b11;
                         u8 colorPixel = (bgPaletteData >> (paletteColorIndex * 2)) & 0b11;
 
-                        // (tileLine * 8 + (LY % 8)) * PIXELS_PER_LINE == LY * PIXELS_PER_LINE
-                        std::size_t bufferIndex = ((tileLine * 8 + (LY % 8)) * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
+                        // (tileLine * 8 + tileY) * PIXELS_PER_LINE == LY * PIXELS_PER_LINE
+                        std::size_t bufferIndex = ((tileLine * 8 + tileY) * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
                         pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel & 0b11];
 
                         //printf("Writting pixel %d of tile %d. Line: %d - Dot: %d\n", pixelIndex, tileIndex, LY, (tileIndex * 8) + pixelIndex);
                     }
+
+                    bgTileMapAddress++;
                 }
             }
         }
