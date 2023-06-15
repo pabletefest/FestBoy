@@ -51,6 +51,12 @@ auto gb::PPU::read(u16 address) -> u8
         case 0xFF41:
             dataRead = LCDStatus.reg | 0x10; // No bit 7 so always read as a 1
             break;
+        case 0xFF42:
+            dataRead = SCY;
+            break;
+        case 0xFF43:
+            SCX = dataRead;
+            break;
         case 0xFF44:
             if (!LCDControl.LCDenable)
                 LY = 0x00;
@@ -94,6 +100,12 @@ auto gb::PPU::write(u16 address, u8 data) -> void
             break;
         case 0xFF41:
             LCDStatus.reg |= (data & 0x71); // Only bits 6, 5, 4, and 3 are writable
+            break;
+        case 0xFF42:
+            SCY = data;
+            break;
+        case 0xFF43:
+            SCX = data;
             break;
         case 0xFF45:
             LYC = data;
@@ -146,10 +158,10 @@ auto gb::PPU::clock() -> void
             // Render the line in the last dot before HBlank (scanline renderer)
             if (currentDot == lastMode3Dot)
             {
-                u8 tileLine = LY / 8;
-                u8 tileY = LY % 8;
+                u8 tileLine = ((LY + SCY) / 8) % 32;
+                u8 tileY = (LY + SCY) % 8;
                 const u16* addressingMode = vramAddressingMode[LCDControl.BGWindTileDataArea];
-                u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32);
+                u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32) + ((SCX >> 3)); // Or (SCX / 8)
 
                 for (int tileIndex = 0; tileIndex < TILES_PER_LINE; tileIndex++)
                 {
@@ -167,13 +179,39 @@ auto gb::PPU::clock() -> void
                         u8 colorPixel = (bgPaletteData >> (paletteColorIndex * 2)) & 0b11;
 
                         // (tileLine * 8 + tileY) * PIXELS_PER_LINE == LY * PIXELS_PER_LINE
-                        std::size_t bufferIndex = ((tileLine * 8 + tileY) * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
+                        std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
                         pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel & 0b11];
 
                         //printf("Writting pixel %d of tile %d. Line: %d - Dot: %d\n", pixelIndex, tileIndex, LY, (tileIndex * 8) + pixelIndex);
                     }
 
                     bgTileMapAddress++;
+                    bgTileMapAddress %= bgTileMapAddress + 32;
+                }
+
+                u8 pixelsShifted = SCX & 0b111;
+
+                // We shift the buffer by fine X pixels and overwrite that number of pixels of the next tile in the tile map
+                if (pixelsShifted > 0)
+                {
+                    std::shift_left(pixelsBuffer.begin(), pixelsBuffer.end(), pixelsShifted);
+
+                    u8 tileId = read(bgTileMapAddress);
+                    u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);
+                    tileDataAddress += (tileId * 16) + (tileY * 2);
+                    u8 lowByteTileData = read(tileDataAddress);
+                    u8 highByteTileData = read(tileDataAddress + 1);
+
+                    for (int pixelIndex = 0; pixelIndex < 8; pixelIndex++)
+                    {
+                        u8 lowBit = (lowByteTileData >> (7 - pixelIndex)) & 1;
+                        u8 highBit = (highByteTileData >> (7 - pixelIndex)) & 1;
+                        u8 paletteColorIndex = ((highBit << 1) | lowBit) & 0b11;
+                        u8 colorPixel = (bgPaletteData >> (paletteColorIndex * 2)) & 0b11;
+             
+                        std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (19 * 8 + pixelIndex);
+                        pixelsBuffer[bufferIndex] = greenShadesRGBPalette[colorPixel & 0b11];
+                    }
                 }
             }
         }

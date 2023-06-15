@@ -52,6 +52,8 @@ namespace gb
         u16 currentDot = 0x00;
         u16 remainingDots = 456; // Max dots per scanline
         u16 lastMode3Dot = 0;
+        u8 SCX = 0x00;
+        u8 SCY = 0x00;
 
         union LCDC
         {

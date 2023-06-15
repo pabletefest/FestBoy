@@ -198,6 +198,12 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
         case 0xFF41:
             ppu.write(address, data);
             break;
+        case 0xFF42:
+            ppu.write(address, data);
+            break;
+        case 0xFF43:
+            ppu.write(address, data);
+            break;
         case 0xFF45:
             ppu.write(address, data);
             break;
