@@ -4,6 +4,8 @@
 
 cmake_minimum_required (VERSION 3.8)
 
+project(FestBoy)
+
 include(FetchContent)
 
 find_package(SDL2 REQUIRED)
