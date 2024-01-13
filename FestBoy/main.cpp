@@ -16,6 +16,9 @@
 #include <iostream>
 #include <SDL.h>
 
+#define GB_PIXELS_HEIGHT 160
+#define GB_PIXELS_WIDTH 144
+
 static constexpr const char* EMU_TITLE = "FestBoy - A GameBoy emulator";
 
 int main(int argc, char* argv[])
@@ -80,6 +83,8 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
 
     Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
+
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris.gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();
@@ -93,7 +98,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    window = SDL_CreateWindow(EMU_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 720, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(EMU_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GB_PIXELS_HEIGHT * 5, GB_PIXELS_WIDTH * 5, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
     if (!window)
     {
@@ -106,7 +111,7 @@ int main(int argc, char* argv[])
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED );
 
-    SDL_Texture* gameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
+    SDL_Texture* gameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, GB_PIXELS_HEIGHT, GB_PIXELS_WIDTH);
 
     while (true)
     {
@@ -125,6 +130,9 @@ int main(int argc, char* argv[])
     }
 
     // Always be sure to clean up
+    SDL_DestroyTexture(gameTexture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     SDL_Quit();
 
 	return 0;

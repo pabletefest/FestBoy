@@ -280,7 +280,8 @@ auto gb::GBConsole::clock() -> void
 
             if (IME)
             {
-                cpu.interruptServiceRoutine();
+                //for (int i = 0; i < 5; i++)
+                    cpu.interruptServiceRoutine();
             }
         }
     }

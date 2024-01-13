@@ -38,6 +38,12 @@ namespace gb
         inline auto getPixelsBufferData() const -> const PPU::Pixel* { return pixelsBuffer.data(); }
         inline auto getPixelsBuffer() -> std::array<Pixel, 160 * 144>& { return pixelsBuffer; }
 
+    private:
+        auto checkAndRaiseStatInterrupts() -> void;
+        auto renderBackground() -> void;
+        auto renderWindow() -> void;
+        auto renderSprites() -> void;
+
     public:
         GBConsole* system = nullptr;
         bool frameCompleted = false;
@@ -51,6 +57,7 @@ namespace gb
         u8 LYC = 0x00;
         u16 currentDot = 0x00;
         u16 remainingDots = 456; // Max dots per scanline
+        const u16 totalDotsPerScanline = 456;
         u16 lastMode3Dot = 0;
         u8 SCX = 0x00;
         u8 SCY = 0x00;
