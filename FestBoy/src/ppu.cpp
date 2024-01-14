@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023 pabletefest
+ *
+ * Licensed under GPLv3 or any later version.
+ * Refer to the included LICENSE file.
+ */
+
 #include "ppu.h"
 #include "gb.h"
 
@@ -138,7 +145,7 @@ auto gb::PPU::clock() -> void
             if (currentDot == 0)
                 LCDStatus.ModeFlag = 2;
 
-            lastMode3Dot = 174 + 80 - 1;// Min number of dots is 168-174 according to different sources (174 placeholder for now)
+            lastMode3Dot = 172 + 80 - 1;// Min number of dots is 168-174 according to different sources (172 placeholder for now)
         }
 
         // Mode 3 (Rendering picture)
