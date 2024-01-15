@@ -205,13 +205,16 @@ auto gb::PPU::clock() -> void
 
 auto gb::PPU::checkAndRaiseStatInterrupts() -> void
 {
+    if (!LCDControl.LCDenable)
+        return;
+
     if (LYC == LY)
         LCDStatus.LYCLY_Flag = 1;
     else
         LCDStatus.LYCLY_Flag = 0;
 
     // STAT Interrupt only triggered in rising edge, that is from low 0 to high 1
-    if (!system->getInterruptState(gb::GBConsole::InterruptType::STAT) && LCDControl.LCDenable)
+    if (!system->getInterruptState(gb::GBConsole::InterruptType::STAT))
     {
         if ((LCDStatus.LYCLY_Flag && LCDStatus.LYCLYSTATIntrSrc) ||
             (LCDStatus.ModeFlag == 0 && LCDStatus.Mode0STATIntrSrc) ||

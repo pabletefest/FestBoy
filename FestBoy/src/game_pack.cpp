@@ -39,6 +39,7 @@ gb::GamePak::GamePak(const std::string& filename)
         switch (header.cartridgeType)
         {
         case 0x00:
+            mapper = std::make_unique<NoMBCMapper>(nROMBanks);
         case 0x01:
             mapper = std::make_unique<NoMBCMapper>(nROMBanks);
             break;
