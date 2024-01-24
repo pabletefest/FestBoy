@@ -26,7 +26,6 @@ namespace gb
         auto read(u16 addr, u8& data) -> bool;
         auto write(u16 addr, u8 data) -> bool;
 
-    private:
         struct CartridgeHeader
         {
             u8 entryPoint[4];
@@ -42,7 +41,12 @@ namespace gb
             u8 maskROMVersionNumber;
             u8 checksum;
             u8 globalChecksum[2];
-        }header;
+        };
+
+        auto getHeaderInfo() const -> const CartridgeHeader&;
+
+    private:
+        CartridgeHeader header;
 
         const std::array<u64, 12> romSizesTable = {
             32 * 1024,

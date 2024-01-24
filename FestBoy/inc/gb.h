@@ -50,6 +50,8 @@ namespace gb
         inline auto checkPendingInterrupts() -> u8 { return IE.reg & IF.reg & 0x1F; }
         inline auto enterHaltMode() -> void { isHaltMode = true; }
 
+        auto getGameTitleFromHeader() -> std::string;
+
     private:
         auto skipBootROM() -> void;
 

@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    window = SDL_CreateWindow(EMU_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GB_PIXELS_HEIGHT * 5, GB_PIXELS_WIDTH * 5, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(std::string(EMU_TITLE + std::string(" (") + emulator.getGameTitleFromHeader() + std::string(")")).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GB_PIXELS_HEIGHT * 5, GB_PIXELS_WIDTH * 5, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
     if (!window)
     {

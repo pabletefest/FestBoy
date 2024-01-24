@@ -367,6 +367,16 @@ auto gb::GBConsole::getInterruptState(InterruptType type) -> u8
     }
 }
 
+auto gb::GBConsole::getGameTitleFromHeader() -> std::string
+{
+    /*constexpr u16 startingOffset = 0x134;
+    constexpr u16 endingOffset = 0x0143;
+    constexpr u8 numBytes = endingOffset - startingOffset + 1;
+    char title[numBytes] = { 0 };*/
+
+    return std::string(reinterpret_cast<const char*>(gamePak->getHeaderInfo().title));
+}
+
 auto gb::GBConsole::skipBootROM() -> void
 {
     //cpu.regs.PC = 0x0100;

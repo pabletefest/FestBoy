@@ -376,7 +376,7 @@ namespace gb
         //console->IME = true;
         console->getCPU().setInterruptEnablePending();
 
-        printf("EI executed, pending IME enable\n");
+        //printf("EI executed, pending IME enable\n");
 
         /*printf("IME == %d\n", console->IME ? 1 : 0);
         printf("IF == %02X\n", console->IF.reg);*/
@@ -392,12 +392,12 @@ namespace gb
         if (console->getCPU().isInterruptEnablePending())
         {
             console->getCPU().discardInterruptEnablePending();
-            printf("Discarded pending IME enable (delayed EI cancelled)\n");
+            //printf("Discarded pending IME enable (delayed EI cancelled)\n");
         }
 
         console->IME = false;
 
-        printf("DI executed, IME is %d\n", console->IME);
+        //printf("DI executed, IME is %d\n", console->IME);
 
         /*printf("IME == %d\n", console->IME ? 1 : 0);
         printf("IF == %02X\n", console->IF.reg);*/
@@ -512,7 +512,7 @@ namespace gb
         RET(cpu);
         EI(cpu->system);
 
-        printf("RETI executed\n");
+        //printf("RETI executed\n");
     }
 
     static auto RST(gb::SM83CPU* cpu, const u8& vectorLowByte) -> void
@@ -534,7 +534,7 @@ namespace gb
         cpu->system->enterHaltMode();
         cpu->instructionCycles = 0;
         
-        printf("HALT mode entered\n");
+        //printf("HALT mode entered\n");
     }
 
     static auto STOP() -> void

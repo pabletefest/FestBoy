@@ -76,3 +76,8 @@ auto gb::GamePak::write(u16 addr, u8 data) -> bool
 
     return false;
 }
+
+auto gb::GamePak::getHeaderInfo() const -> const CartridgeHeader&
+{
+    return header;
+}

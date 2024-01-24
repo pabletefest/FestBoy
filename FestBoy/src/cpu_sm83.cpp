@@ -86,14 +86,14 @@ auto gb::SM83CPU::clock() -> void
         {
             if (interruptEnablePending)
             {
-                printf("EI delayed finished, setting IME\n");
+                //printf("EI delayed finished, setting IME\n");
                 interruptEnablePending = false;
                 system->IME = true;
             }
 
             u8 opcode = read8(regs.PC++);
-            char msgLog[256];
-            sprintf_s(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
+            //char msgLog[256];
+            //sprintf_s(msgLog, "A: %02X F: %02X B: %02X C: %02X D: %02X E: %02X H: %02X L: %02X SP: %04X PC: 00:%04X (%02X %02X %02X %02X)\n", regs.A, regs.F, regs.B, regs.C, regs.D, regs.E, regs.H, regs.L, regs.SP, regs.PC - 1, opcode, read8(regs.PC), read8(regs.PC + 1), read8(regs.PC + 2));
             //printf(msgLog);
             /*printf("\nExecuting %02X", opcode);
             printf("\nIF == %02X", system->IF.reg);*/
@@ -131,7 +131,7 @@ auto gb::SM83CPU::checkPendingInterrupts() -> bool
 
 auto gb::SM83CPU::interruptServiceRoutine() -> u8
 {
-    printf("Executing interrupt service routine\n");
+    //printf("Executing interrupt service routine\n");
 
     read8(regs.PC++); // Cancelled fetch
 
@@ -172,7 +172,7 @@ auto gb::SM83CPU::interruptServiceRoutine() -> u8
     //system->pendingInterrupt = false;
     system->IME = false;
 
-    printf("IME set to 0\n");
+    //printf("IME set to 0\n");
 
     return 20; //ISP takes 5 m-cycles (20 t-cycles)
 
