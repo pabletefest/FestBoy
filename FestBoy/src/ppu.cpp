@@ -109,7 +109,7 @@ auto gb::PPU::write(u16 address, u8 data) -> void
             LCDControl.reg = data;
             break;
         case 0xFF41:
-            LCDStatus.reg |= (data & 0x71); // Only bits 6, 5, 4, and 3 are writable
+            LCDStatus.reg |= (data & 0x78); // Only bits 6, 5, 4, and 3 are writable
             LCDStatus.unused = 1;
             break;
         case 0xFF42:
@@ -256,10 +256,12 @@ auto gb::PPU::checkAndRaiseStatInterrupts() -> void
 
 auto gb::PPU::renderBackground() -> void
 {
-    u8 tileLine = ((LY + SCY) / 8) % 32;
-    u8 tileY = (LY + SCY) % 8;
+    //u8 tileLine = ((LY + SCY) % 32) / 8;
+    u16 tileLine = 32 * (((LY + SCY) & 0xFF) / 8);
+    u16 tileY = (LY + SCY) % 8;
+    u16 tileOffset = (0 + tileLine) & 0x3FF;
     const u16* addressingMode = vramAddressingMode[LCDControl.BGWindTileDataArea];
-    u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + (tileLine * 32)/* + ((SCX >> 3))*/; // Or (SCX / 8)
+    u16 bgTileMapAddress = tileMapAddress[LCDControl.BGtileMapArea] + tileOffset /*(tileLine * 32)*//* + ((SCX >> 3))*/; // Or (SCX / 8)
 
     for (int tileIndex = 0; tileIndex < TILES_PER_LINE; tileIndex++)
     {
@@ -294,6 +296,7 @@ auto gb::PPU::renderBackground() -> void
         }
 
         bgTileMapAddress++;
+        //bgTileMapAddress = ((bgTileMapAddress + 1) % 32);
         //bgTileMapAddress %= bgTileMapAddsress + 32;
     }
 
