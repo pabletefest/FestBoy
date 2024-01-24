@@ -128,6 +128,8 @@ int main(int argc, char* argv[])
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, gameTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
+
+        SDL_Delay(16);
     }
 
     // Always be sure to clean up

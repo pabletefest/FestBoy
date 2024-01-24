@@ -125,6 +125,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
             break;
         default:
             dataRead = internalRAM[address];
+            printf("Reading %02X at $%04X", dataRead, address);
             break;
         }
     }
@@ -241,6 +242,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
             break;
         default:
             internalRAM[address] = data;
+            printf("Writting %02X to $%04X", data, address);
             break;
         }
     }
