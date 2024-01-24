@@ -58,7 +58,7 @@ auto gb::PPU::read(u16 address) -> u8
             dataRead = LCDControl.reg;
             break;
         case 0xFF41:
-            dataRead = LCDStatus.reg | 0x10; // No bit 7 so always read as a 1
+            dataRead = LCDStatus.reg | 0x80; // No bit 7 so always read as a 1
             break;
         case 0xFF42:
             dataRead = SCY;
