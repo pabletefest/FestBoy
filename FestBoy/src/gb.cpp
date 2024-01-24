@@ -40,6 +40,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         // BootROM is mapped in the first 256 bytes of address space so PC points to this code
         dataRead = boot_rom[address & 0xFF];
+        //dataRead = bootROMFromFile[address & 0xFF];
     }
     else if (gamePak->read(address, dataRead))
     {
@@ -101,6 +102,12 @@ auto gb::GBConsole::read8(const u16& address) -> u8
             dataRead = ppu.read(address);
             break;
         case 0xFF41:
+            dataRead = ppu.read(address);
+            break;
+        case 0xFF42:
+            dataRead = ppu.read(address);
+            break;
+        case 0xFF43:
             dataRead = ppu.read(address);
             break;
         case 0xFF44:
