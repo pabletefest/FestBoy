@@ -81,19 +81,17 @@ namespace gb
         }
 
         auto checkPendingInterrupts() -> bool;
-        auto interruptServiceRoutine() -> void;
+        auto interruptServiceRoutine() -> u8;
         inline auto isInterruptEnablePending() -> bool { return interruptEnablePending; };
         inline auto setInterruptEnablePending() -> void { interruptEnablePending = true; };
         inline auto discardInterruptEnablePending() -> void { interruptEnablePending = false; };
+        auto setRegisterValuesPostBootROM() -> void;
 
     private:
         auto decodeAndExecuteInstruction(u8 opcode) -> void;
         auto decodeAndExecuteCBInstruction(u8 cbOpcode) -> void;
 
-        auto setRegisterValuesPostBootROM() -> void;
-
     private:
-        u8 instructionCycles = 0;
         u64 cpuT_CyclesElapsed = 0;
         u64 cpuM_CyclesElapsed = 0;
 
@@ -106,6 +104,7 @@ namespace gb
 
     public:
         GBConsole* system = nullptr;
+        u8 instructionCycles = 0;
 
         struct Registers
         {

@@ -40,8 +40,9 @@ gb::GamePak::GamePak(const std::string& filename)
         {
         case 0x00:
             mapper = std::make_unique<NoMBCMapper>(nROMBanks);
+            break;
         case 0x01:
-            mapper = std::make_unique<NoMBCMapper>(nROMBanks);
+            //mapper = std::make_unique<NoMBCMapper>(nROMBanks);
             break;
         default:
             break;

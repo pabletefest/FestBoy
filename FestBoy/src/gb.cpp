@@ -7,6 +7,7 @@
 
 #pragma once
 #include "gb.h"
+#include "bootrom.h"
 #include "game_pack.h"
 
 #include <iostream>
@@ -21,6 +22,9 @@ gb::GBConsole::GBConsole()
     std::memset(hram.data(), 0x00, hram.size());
     std::memset(internalRAM.data(), 0x00, internalRAM.size());
     //cpu.debugRAM = internalRAM.data();
+
+    cpu.reset();
+    ppu.reset();
 }
 
 auto gb::GBConsole::insertCartridge(const Ref<GamePak>& cartridge) -> void
@@ -32,7 +36,12 @@ auto gb::GBConsole::read8(const u16& address) -> u8
 {
     u8 dataRead = 0x00;
 
-    if (gamePak->read(address, dataRead))
+    if (address < 0x0100 && ((bootROMMappedRegister & 0x01) == 0))
+    {
+        // BootROM is mapped in the first 256 bytes of address space so PC points to this code
+        dataRead = boot_rom[address & 0xFF];
+    }
+    else if (gamePak->read(address, dataRead))
     {
         // Let the Cartridge handle the read
     }
@@ -64,6 +73,9 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         switch (address)
         {
+        case 0xFF00:
+            return 0x0F; // TEMP
+            break;
         case 0xFF01:
             dataRead = SB_register;
             break;
@@ -101,6 +113,9 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         case 0xFF47:
             dataRead = ppu.read(address);
             break;
+        case 0xFF50:
+            dataRead = bootROMMappedRegister;
+            break;
         default:
             dataRead = internalRAM[address];
             break;
@@ -114,10 +129,10 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         dataRead = 0xE0 | IE.reg;
     }
-    else
+    /*else
     {
         __debugbreak();
-    }
+    }*/
 
     return dataRead;
 }
@@ -136,7 +151,11 @@ auto gb::GBConsole::read16(const u16& address) -> u16
 
 auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
 {
-    if (gamePak->write(address, data))
+    if (address < 0x100 && ((bootROMMappedRegister & 0x01) == 0))
+    {
+        // BootROM is mapped in the first 256 bytes of address space so no writes allowed
+    }
+    else if (gamePak->write(address, data))
     {
         // Let the cartridge handle the write
     }
@@ -210,6 +229,9 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
         case 0xFF47:
             ppu.write(address, data);
             break;
+        case 0xFF50:
+            bootROMMappedRegister = data;
+            break;
         default:
             internalRAM[address] = data;
             break;
@@ -223,10 +245,10 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         IE.reg = data;
     }
-    else
+    /*else
     {
         __debugbreak();
-    }
+    }*/
 }
 
 auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
@@ -246,10 +268,10 @@ auto gb::GBConsole::write16(const u16& address, const u16& data) -> void
 auto gb::GBConsole::reset() -> void
 {
     cpu.reset();
+    ppu.reset();
 
     // TEMP for tests
-    cpu.regs.PC = 0x0100;
-    timer.setDIVtoSkippedBootromValue();
+    //skipBootROM();
     //internalRAM[0xFF44] = 0x90;
 }
 
@@ -278,11 +300,13 @@ auto gb::GBConsole::clock() -> void
         {
             isHaltMode = false;
 
-            if (IME)
-            {
-                //for (int i = 0; i < 5; i++)
-                    cpu.interruptServiceRoutine();
-            }
+            printf("HALT mode leaved, IME is %d\n", IME);
+
+            //if (IME)
+            //{
+            //    //for (int i = 0; i < 5; i++)
+            //        cpu.interruptServiceRoutine();
+            //}
         }
     }
     else
@@ -341,4 +365,11 @@ auto gb::GBConsole::getInterruptState(InterruptType type) -> u8
         return IF.Joypad;
         break;
     }
+}
+
+auto gb::GBConsole::skipBootROM() -> void
+{
+    //cpu.regs.PC = 0x0100;
+    cpu.setRegisterValuesPostBootROM();
+    timer.setDIVtoSkippedBootromValue();
 }

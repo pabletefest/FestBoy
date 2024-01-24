@@ -62,8 +62,9 @@ auto gb::SM83CPU::write16(const u16& address, const u16& data) -> void
 
 auto gb::SM83CPU::reset() -> void
 {
+    regs.PC = 0x0000;
     // Initial DMG register values after bootrom
-    setRegisterValuesPostBootROM();
+    //setRegisterValuesPostBootROM();
 }
 
 auto gb::SM83CPU::clock() -> void
@@ -79,13 +80,13 @@ auto gb::SM83CPU::clock() -> void
         if (system->IME && (system->IF.reg & system->IE.reg & 0x1F))
         {
             //printf("\nExecuting interrupt service routine");
-            interruptServiceRoutine();
+            instructionCycles = interruptServiceRoutine();
         }
         else
         {
             if (interruptEnablePending)
             {
-                //printf("\nEI delayed finished, setting IME");
+                printf("EI delayed finished, setting IME\n");
                 interruptEnablePending = false;
                 system->IME = true;
             }
@@ -112,74 +113,125 @@ auto gb::SM83CPU::clock() -> void
         }
     }
 
-    instructionCycles--;
+    if (instructionCycles > 0) 
+        instructionCycles--;
+
     cpuT_CyclesElapsed++;
     cpuM_CyclesElapsed = cpuT_CyclesElapsed / 4;
 }
 
 auto gb::SM83CPU::checkPendingInterrupts() -> bool
 {
-    return (system->IE.VBlank && system->IF.VBlank)
-        || (system->IE.LCD_STAT && system->IF.LCD_STAT)
-        || (system->IE.Timer && system->IF.Timer)
-        || (system->IE.Serial && system->IF.Serial)
-        || (system->IE.Joypad && system->IF.Joypad);
+    return (system->IE.VBlank & system->IF.VBlank)
+        || (system->IE.LCD_STAT & system->IF.LCD_STAT)
+        || (system->IE.Timer & system->IF.Timer)
+        || (system->IE.Serial & system->IF.Serial)
+        || (system->IE.Joypad & system->IF.Joypad);
 }
 
-auto gb::SM83CPU::interruptServiceRoutine() -> void
+auto gb::SM83CPU::interruptServiceRoutine() -> u8
 {
-    if (cpuT_CyclesElapsed % 4 == 0) // During m-cycles
+    printf("Executing interrupt service routine\n");
+
+    read8(regs.PC++); // Cancelled fetch
+
+    regs.PC--; // Amend the PC increment after cancelled opcode fetch
+
+    write8(--regs.SP, (regs.PC >> 8) & 0x00FF);
+
+    write8(--regs.SP, regs.PC & 0x00FF);
+
+    u8 interrupts = system->IF.reg & system->IE.reg & 0x1F;
+
+    if (interrupts & 0x01) // VBlank
     {
-        switch (interruptRoutineCycle % 5)
-        {
-        case 0:
-            read8(regs.PC++); // Cancelled fetch
-            break;
-        case 1:
-            regs.PC--; // Amend the PC increment after cancelled opcode fetch
-            break;
-        case 2:
-            write8(--regs.SP, (regs.PC >> 8) & 0x00FF);
-            break;
-        case 3:
-            write8(--regs.SP, regs.PC & 0x00FF);
-            break;
-        case 4:
-            u8 interrupts = system->IF.reg & system->IE.reg & 0x1F;
-
-            if (interrupts & 0x01) // VBlank
-            {
-                system->IF.reg &= ~0x01;
-                regs.PC = 0x0040;
-            }
-            else if (interrupts & 0x02) // STAT
-            {
-                system->IF.reg &= ~0x02;
-                regs.PC = 0x0048;
-            }
-            else if (interrupts & 0x04) // Timer
-            {
-                system->IF.reg &= ~0x04;
-                regs.PC = 0x0050;
-            }
-            else if (interrupts & 0x08) // Serial
-            {
-                system->IF.reg &= ~0x08;
-                regs.PC = 0x0058;
-            }
-            else if (interrupts & 0x10) // Joypad
-            {
-                system->IF.reg &= ~0x10;
-                regs.PC = 0x0060;
-            }
-
-            //system->pendingInterrupt = false;
-            system->IME = false;
-            break;
-        }
-
-        interruptRoutineCycle++;
+        system->IF.reg &= ~0x01;
+        regs.PC = 0x0040;
     }
+    else if (interrupts & 0x02) // STAT
+    {
+        system->IF.reg &= ~0x02;
+        regs.PC = 0x0048;
+    }
+    else if (interrupts & 0x04) // Timer
+    {
+        system->IF.reg &= ~0x04;
+        regs.PC = 0x0050;
+    }
+    else if (interrupts & 0x08) // Serial
+    {
+        system->IF.reg &= ~0x08;
+        regs.PC = 0x0058;
+    }
+    else if (interrupts & 0x10) // Joypad
+    {
+        system->IF.reg &= ~0x10;
+        regs.PC = 0x0060;
+    }
+
+    //system->pendingInterrupt = false;
+    system->IME = false;
+
+    printf("IME set to 0\n");
+
+    return 20; //ISP takes 5 m-cycles (20 t-cycles)
+
+    //if (cpuT_CyclesElapsed % 4 == 0) // During m-cycles
+    //{
+    //    printf("Executing interrupt service routine\n");
+
+    //    switch (interruptRoutineCycle % 5)
+    //    {
+    //    case 0:
+    //        read8(regs.PC++); // Cancelled fetch
+    //        break;
+    //    case 1:
+    //        regs.PC--; // Amend the PC increment after cancelled opcode fetch
+    //        break;
+    //    case 2:
+    //        write8(--regs.SP, (regs.PC >> 8) & 0x00FF);
+    //        break;
+    //    case 3:
+    //        write8(--regs.SP, regs.PC & 0x00FF);
+    //        break;
+    //    case 4:
+    //        u8 interrupts = system->IF.reg & system->IE.reg & 0x1F;
+
+    //        if (interrupts & 0x01) // VBlank
+    //        {
+    //            system->IF.reg &= ~0x01;
+    //            regs.PC = 0x0040;
+    //        }
+    //        else if (interrupts & 0x02) // STAT
+    //        {
+    //            system->IF.reg &= ~0x02;
+    //            regs.PC = 0x0048;
+    //        }
+    //        else if (interrupts & 0x04) // Timer
+    //        {
+    //            system->IF.reg &= ~0x04;
+    //            regs.PC = 0x0050;
+    //        }
+    //        else if (interrupts & 0x08) // Serial
+    //        {
+    //            system->IF.reg &= ~0x08;
+    //            regs.PC = 0x0058;
+    //        }
+    //        else if (interrupts & 0x10) // Joypad
+    //        {
+    //            system->IF.reg &= ~0x10;
+    //            regs.PC = 0x0060;
+    //        }
+
+    //        //system->pendingInterrupt = false;
+    //        system->IME = false;
+
+    //        printf("IME set to 0\n");
+    //        break;
+    //    }
+
+    //    interruptRoutineCycle++;
+    //}
 
     //cpuT_CyclesElapsed++;
     //cpuM_CyclesElapsed = cpuT_CyclesElapsed / 4;

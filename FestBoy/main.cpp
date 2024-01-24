@@ -82,9 +82,10 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/individual/11-op a,(hl).gb");
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
 
-    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris.gb");
+    Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris V1.1.gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();

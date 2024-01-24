@@ -120,6 +120,10 @@ auto gb::PPU::write(u16 address, u8 data) -> void
             break;
         case 0xFF45:
             LYC = data;
+            if (LYC == LY)
+                LCDStatus.LYCLY_Flag = 1;
+            else
+                LCDStatus.LYCLY_Flag = 0;
             checkAndRaiseStatInterrupts();
             break;
         case 0xFF47:
@@ -135,24 +139,43 @@ auto gb::PPU::reset() -> void
 
 auto gb::PPU::clock() -> void
 {
-    checkAndRaiseStatInterrupts();
+    if (!LCDControl.LCDenable)
+        return;
+
+    //checkAndRaiseStatInterrupts();
    
     if (LY >= 0 && LY <= 143)
     {
+        if (currentDot == 0)
+        {
+            if (LYC == LY)
+                LCDStatus.LYCLY_Flag = 1;
+            else
+                LCDStatus.LYCLY_Flag = 0;
+
+            checkAndRaiseStatInterrupts();
+        }
+
         // Mode 2 (OAM search)
         if (currentDot >= 0 && currentDot <= 79)
         {
             if (currentDot == 0)
+            {
                 LCDStatus.ModeFlag = 2;
+                lastMode3Dot = 172 + 80 - 1;// Min number of dots is 168-174 according to different sources (172 placeholder for now)
+            }
 
-            lastMode3Dot = 172 + 80 - 1;// Min number of dots is 168-174 according to different sources (172 placeholder for now)
+            //checkAndRaiseStatInterrupts();
         }
 
         // Mode 3 (Rendering picture)
         if (currentDot >= 80 && currentDot <= lastMode3Dot)
         {
             if (currentDot == 80)
+            {
                 LCDStatus.ModeFlag = 3;
+                //checkAndRaiseStatInterrupts();
+            }
 
             // Render the line in the last dot before HBlank (scanline renderer)
             if (currentDot == lastMode3Dot)
@@ -173,7 +196,10 @@ auto gb::PPU::clock() -> void
         if ((currentDot >= (lastMode3Dot + 1)) && (currentDot <= (totalDotsPerScanline - 1)))
         {
             if (currentDot == (lastMode3Dot + 1))
+            {
                 LCDStatus.ModeFlag = 0;
+                //checkAndRaiseStatInterrupts();
+            }
         }
     }
     else
@@ -205,13 +231,13 @@ auto gb::PPU::clock() -> void
 
 auto gb::PPU::checkAndRaiseStatInterrupts() -> void
 {
-    if (!LCDControl.LCDenable)
-        return;
+    /*if (!LCDControl.LCDenable)
+        return;*/
 
-    if (LYC == LY)
+    /*if (LYC == LY)
         LCDStatus.LYCLY_Flag = 1;
     else
-        LCDStatus.LYCLY_Flag = 0;
+        LCDStatus.LYCLY_Flag = 0;*/
 
     // STAT Interrupt only triggered in rising edge, that is from low 0 to high 1
     if (!system->getInterruptState(gb::GBConsole::InterruptType::STAT))
@@ -222,6 +248,8 @@ auto gb::PPU::checkAndRaiseStatInterrupts() -> void
             (LCDStatus.ModeFlag == 1 && LCDStatus.Mode1STATIntrSrc))
         {
             system->requestInterrupt(gb::GBConsole::InterruptType::STAT);
+
+            printf("STAT Interrupt ocurred - IF: %d, LY: %d, LYC: %d\n", system->IF.reg, LY, LYC);
         }
     }
 }
@@ -236,8 +264,17 @@ auto gb::PPU::renderBackground() -> void
     for (int tileIndex = 0; tileIndex < TILES_PER_LINE; tileIndex++)
     {
         u8 tileId = read(bgTileMapAddress);
-        u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);
-        tileDataAddress += (tileId * 16) + (tileY * 2);
+        //u16 tileDataAddress = (tileId < 128) ? *addressingMode : *(addressingMode + 1);
+        u16 tileDataAddress = *addressingMode;
+
+        if (LCDControl.BGWindTileDataArea == 0)
+            tileDataAddress += static_cast<s8>(tileId) * 16;
+        else
+            tileDataAddress += tileId * 16;
+
+        //tileDataAddress += (LCDControl.BGWindTileDataArea) ? tileId : static_cast<s8>(tileId);
+
+        tileDataAddress += /*(tileId * 16) +*/ (tileY * 2);
         u8 lowByteTileData = read(tileDataAddress);
         u8 highByteTileData = read(tileDataAddress + 1);
 

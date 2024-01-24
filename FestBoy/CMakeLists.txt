@@ -14,7 +14,7 @@ FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download
 FetchContent_MakeAvailable(json)
 
 # Add source to this project's executable.
-add_executable (${PROJECT_NAME} "main.cpp"  "src/cpu_sm83.cpp" "inc/instructions.h" "inc/gb.h" "src/gb.cpp" "inc/game_pack.h" "src/game_pack.cpp" "inc/mapper.h" "src/mapper.cpp" "inc/no_mbc.h" "src/no_mbc.cpp" "inc/opcodesTests.h" "inc/timer.h" "src/timer.cpp" "src/ppu.cpp" "inc/util_funcs.h")
+add_executable (${PROJECT_NAME} "main.cpp"  "src/cpu_sm83.cpp" "inc/instructions.h" "inc/gb.h" "src/gb.cpp" "inc/game_pack.h" "src/game_pack.cpp" "inc/mapper.h" "src/mapper.cpp" "inc/no_mbc.h" "src/no_mbc.cpp" "inc/opcodesTests.h" "inc/timer.h" "src/timer.cpp" "src/ppu.cpp" "inc/util_funcs.h" "inc/bootrom.h")
 
 target_include_directories(${PROJECT_NAME} PRIVATE inc/)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2 SDL2::SDL2main nlohmann_json::nlohmann_json)

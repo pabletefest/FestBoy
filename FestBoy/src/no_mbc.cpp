@@ -25,11 +25,11 @@ auto gb::NoMBCMapper::mapRead(u16 addr, u16& mapped_addr) -> bool
 
 auto gb::NoMBCMapper::mapWrite(u16 addr, u16& mapped_addr, u8 data) -> bool
 {
-    if (addr >= 0x0000 && addr <= 0x7FFF)
+    /*if (addr >= 0x0000 && addr <= 0x7FFF)
     {
         mapped_addr = addr;
         return true;
-    }
+    }*/
 
     return false;
 }

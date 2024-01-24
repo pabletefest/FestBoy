@@ -51,6 +51,9 @@ namespace gb
         inline auto enterHaltMode() -> void { isHaltMode = true; }
 
     private:
+        auto skipBootROM() -> void;
+
+    private:
         SM83CPU cpu;
         std::array<u8, convertKBToBytes(8)> wram;
         std::array<u8, 127> hram;
@@ -69,6 +72,8 @@ namespace gb
         bool isHaltMode = false;
 
         PPU ppu;
+
+        u8 bootROMMappedRegister = 0x00;
 
     public:
         bool IME = false;
