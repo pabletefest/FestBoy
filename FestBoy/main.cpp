@@ -116,6 +116,8 @@ int main(int argc, char* argv[])
 
     while (true)
     {
+        u64 startFrameTime = SDL_GetTicks64();    
+
         do
         {
             emulator.clock();
@@ -129,7 +131,11 @@ int main(int argc, char* argv[])
         SDL_RenderCopy(renderer, gameTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(16);
+        //SDL_Delay(16);
+
+        u64 endFrameTime = SDL_GetTicks64();
+        u64 idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
+        SDL_Delay(idleTime); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
     // Always be sure to clean up
