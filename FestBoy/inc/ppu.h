@@ -43,6 +43,7 @@ namespace gb
         auto renderBackground() -> void;
         auto renderWindow() -> void;
         auto renderSprites() -> void;
+        auto scanlineOAMScanSearchRoutine() -> void;
 
     public:
         GBConsole* system = nullptr;
@@ -62,6 +63,8 @@ namespace gb
         };
 
         std::array<SpriteInfoOAM, 40> OAM = {};
+        std::array<SpriteInfoOAM, 10> scanlineValidSprites = {};
+        u8 spritesFound = 0;
 
         u8 LY = 0x00;
         u8 LYC = 0x00;

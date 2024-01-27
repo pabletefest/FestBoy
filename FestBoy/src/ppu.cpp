@@ -29,7 +29,8 @@ gb::PPU::PPU(GBConsole* device)
     : system(device), LCDControl({}), LCDStatus({})
 {
     std::memset(VRAM.data(), 0x00, VRAM.size());
-    std::memset(OAM.data(), 0xFF, OAM.size() * sizeof(SpriteInfoOAM));
+    std::memset(OAM.data(), 0x00, OAM.size() * sizeof(SpriteInfoOAM));
+    std::memset(scanlineValidSprites.data(), 0x00, scanlineValidSprites.size() * sizeof(SpriteInfoOAM));
 }
 
 auto gb::PPU::read(u16 address) -> u8
@@ -165,6 +166,8 @@ auto gb::PPU::clock() -> void
             {
                 LCDStatus.ModeFlag = 2;
                 lastMode3Dot = 172 + 80 - 1;// Min number of dots is 168-174 according to different sources (172 placeholder for now)
+
+                scanlineOAMScanSearchRoutine();
             }
 
             //checkAndRaiseStatInterrupts();
@@ -335,4 +338,20 @@ auto gb::PPU::renderWindow() -> void
 
 auto gb::PPU::renderSprites() -> void
 {
+}
+
+auto gb::PPU::scanlineOAMScanSearchRoutine() -> void
+{
+    spritesFound = 0;
+
+    for (const auto& objItem : OAM)
+    {
+        if (spritesFound == 10)
+            break;
+
+        if ((objItem.Yposition >= LY) && (objItem.Yposition < (LY + 8)))
+        {
+            scanlineValidSprites[spritesFound++] = objItem;
+        }
+    }
 }
