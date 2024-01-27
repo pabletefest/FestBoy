@@ -29,7 +29,7 @@ gb::PPU::PPU(GBConsole* device)
     : system(device), LCDControl({}), LCDStatus({})
 {
     std::memset(VRAM.data(), 0x00, VRAM.size());
-    std::memset(OAM.data(), 0x00, OAM.size());
+    std::memset(OAM.data(), 0xFF, OAM.size() * sizeof(SpriteInfoOAM));
 }
 
 auto gb::PPU::read(u16 address) -> u8
@@ -48,7 +48,8 @@ auto gb::PPU::read(u16 address) -> u8
         /*if (LCDStatus.ModeFlag == 3 || LCDStatus.ModeFlag == 2)
             return 0xFF;*/
 
-        dataRead = OAM[address & 0x9F];
+        //dataRead = OAM[address & 0x9F];
+        dataRead = reinterpret_cast<u8*>(OAM.data())[address & 0x9F];
     }
     else
     {
@@ -99,7 +100,8 @@ auto gb::PPU::write(u16 address, u8 data) -> void
         /*if (LCDStatus.ModeFlag == 3 || LCDStatus.ModeFlag == 2)
             return;*/
 
-        OAM[address & 0x9F] = data;
+        //OAM[address & 0x9F] = data;
+        reinterpret_cast<u8*>(OAM.data())[address & 0x9F] = data;
     }
     else
     {

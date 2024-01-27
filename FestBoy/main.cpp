@@ -86,6 +86,9 @@ int main(int argc, char* argv[])
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris.gb");
     Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris V1.1.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Dr. Mario.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Super Mario Land.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Donkey Kong.gb");
     
     emulator.insertCartridge(cartridge);
     emulator.reset();
@@ -135,7 +138,7 @@ int main(int argc, char* argv[])
 
         u64 endFrameTime = SDL_GetTicks64();
         u64 idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
-        SDL_Delay(idleTime); // Sleep the remaining time of the frame after being calculated and drawn to the screen
+        SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
     // Always be sure to clean up

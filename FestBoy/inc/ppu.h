@@ -51,7 +51,17 @@ namespace gb
     private:
         std::array<Pixel, 160 * 144> pixelsBuffer = {};
         std::array<u8, 8_KB> VRAM = {};
-        std::array<u8, 160> OAM = {};
+        //std::array<u8, 160> OAM = {};
+
+        struct SpriteInfoOAM
+        {
+            u8 Yposition;
+            u8 Xposition;
+            u8 tileIndex;
+            u8 attributesFlags;
+        };
+
+        std::array<SpriteInfoOAM, 40> OAM = {};
 
         u8 LY = 0x00;
         u8 LYC = 0x00;
