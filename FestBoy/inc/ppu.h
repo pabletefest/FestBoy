@@ -17,6 +17,8 @@ namespace gb
     class PPU
     {
     public:
+        friend class GBConsole;
+
         struct Pixel
         {
             // We use this order for convenience
@@ -109,5 +111,7 @@ namespace gb
         }LCDStatus = {};
 
         u8 bgPaletteData = 0x00;
+        u8 obj0PaletteData = 0x00;
+        u8 obj1PaletteData = 0x00;
     };
 }

@@ -45,6 +45,8 @@ namespace gb
 
         auto getHeaderInfo() const -> const CartridgeHeader&;
 
+        auto getROMBuffer() const -> const u8*;
+
     private:
         CartridgeHeader header;
 

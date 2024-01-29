@@ -76,6 +76,8 @@ namespace gb
         PPU ppu;
 
         u8 bootROMMappedRegister = 0x00;
+        
+        u8 dmaSourceAddress = 0x00;
 
     public:
         bool IME = false;

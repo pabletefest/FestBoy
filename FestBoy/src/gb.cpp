@@ -117,7 +117,16 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         case 0xFF45:
             dataRead = ppu.read(address);
             break;
+        case 0xFF46:
+            dataRead = dmaSourceAddress;
+            break;
         case 0xFF47:
+            dataRead = ppu.read(address);
+            break;
+        case 0xFF48:
+            dataRead = ppu.read(address);
+            break;
+        case 0xFF49:
             dataRead = ppu.read(address);
             break;
         case 0xFF50:
@@ -234,7 +243,29 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
         case 0xFF45:
             ppu.write(address, data);
             break;
+        case 0xFF46:
+            {
+                dmaSourceAddress = data;
+                u16 sourceAddress = (dmaSourceAddress << 8) & 0xFF00;
+                const void* srcPtr = nullptr;
+
+                if (sourceAddress < 0x8000)
+                    srcPtr = gamePak->getROMBuffer();
+                else if (sourceAddress >= 0xC000 && sourceAddress <= 0xFDFF)
+                    srcPtr = wram.data();
+                else
+                    __debugbreak();
+
+                std::memcpy(ppu.OAM.data(), srcPtr, ppu.OAM.size() * sizeof(PPU::SpriteInfoOAM));
+            }
+            break;
         case 0xFF47:
+            ppu.write(address, data);
+            break;
+        case 0xFF48:
+            ppu.write(address, data);
+            break;
+        case 0xFF49:
             ppu.write(address, data);
             break;
         case 0xFF50:

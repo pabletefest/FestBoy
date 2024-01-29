@@ -81,3 +81,8 @@ auto gb::GamePak::getHeaderInfo() const -> const CartridgeHeader&
 {
     return header;
 }
+
+auto gb::GamePak::getROMBuffer() const -> const u8*
+{
+    return vROMMemory.data();
+}

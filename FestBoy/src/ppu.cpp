@@ -81,6 +81,12 @@ auto gb::PPU::read(u16 address) -> u8
         case 0xFF47:
             dataRead = bgPaletteData;
             break;
+        case 0xFF48:
+            dataRead = obj0PaletteData;
+            break;
+        case 0xFF49:
+            dataRead = obj1PaletteData;
+            break;
         }
     }
 
@@ -131,6 +137,12 @@ auto gb::PPU::write(u16 address, u8 data) -> void
             break;
         case 0xFF47:
             bgPaletteData = data;
+            break;
+        case 0xFF48:
+            obj0PaletteData = data;
+            break;
+        case 0xFF49:
+            obj1PaletteData = data;
             break;
         }
     }
@@ -342,6 +354,7 @@ auto gb::PPU::renderSprites() -> void
 
 auto gb::PPU::scanlineOAMScanSearchRoutine() -> void
 {
+    u8 spriteSize = 8 * (LCDControl.OBJsize * 2);
     spritesFound = 0;
 
     for (const auto& objItem : OAM)
@@ -349,7 +362,7 @@ auto gb::PPU::scanlineOAMScanSearchRoutine() -> void
         if (spritesFound == 10)
             break;
 
-        if ((objItem.Yposition >= LY) && (objItem.Yposition < (LY + 8)))
+        if (((objItem.Yposition) >= LY) && (objItem.Yposition < (LY + 8)))
         {
             scanlineValidSprites[spritesFound++] = objItem;
         }
