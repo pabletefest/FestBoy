@@ -46,7 +46,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         // Let the Cartridge handle the read
     }
-    else if (address >= 0x8000 && address <= 0x9FFF)
+    else if (address >= 0x8000 && address <= 0x9FFF) // VRAM
     {
         dataRead = ppu.read(address);
     }
@@ -54,7 +54,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         dataRead = internalRAM[address];
     }
-    else if (address >= 0xC000 && address <= 0xDFFF)
+    else if (address >= 0xC000 && address <= 0xDFFF) // WRAM
     {
         dataRead = wram[address & 0x1FFF];
     }
@@ -62,7 +62,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         dataRead = wram[address & 0x1DFF];
     }
-    else if (address >= 0xFE00 && address <= 0xFE9F)
+    else if (address >= 0xFE00 && address <= 0xFE9F) // OAM
     {
         dataRead = ppu.read(address);
     }
@@ -70,7 +70,7 @@ auto gb::GBConsole::read8(const u16& address) -> u8
     {
         dataRead = internalRAM[address];
     }
-    else if (address >= 0xFF00 && address <= 0xFF7F)// IO Registers
+    else if (address >= 0xFF00 && address <= 0xFF7F) // IO Registers
     {
         switch (address)
         {
@@ -176,7 +176,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         // Let the cartridge handle the write
     }
-    else if (address >= 0x8000 && address <= 0x9FFF)
+    else if (address >= 0x8000 && address <= 0x9FFF) // VRAM
     {
         ppu.write(address, data);
     }
@@ -184,7 +184,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         internalRAM[address] = data;
     }
-    else if (address >= 0xC000 && address <= 0xDFFF)
+    else if (address >= 0xC000 && address <= 0xDFFF) // WRAM
     {
         wram[address & 0x1FFF] = data;
     }
@@ -192,7 +192,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         wram[address & 0x1DFF] = data;
     }
-    else if (address >= 0xFE00 && address <= 0xFE9F)
+    else if (address >= 0xFE00 && address <= 0xFE9F) // OAM
     {
         ppu.write(address, data);
     }
@@ -200,7 +200,7 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         internalRAM[address] = data;
     }
-    else if (address >= 0xFF00 && address <= 0xFF7F)// IO Registers
+    else if (address >= 0xFF00 && address <= 0xFF7F) // IO Registers
     {
         switch (address)
         {
