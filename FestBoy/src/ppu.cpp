@@ -358,8 +358,6 @@ auto gb::PPU::renderSprites() -> void
         /*if (obj.Xposition == 0 || obj.Xposition >= 168)
             continue;*/
 
-        //if (obj.attributesFlags & 0x80)
-
         u8 tileIndex = LCDControl.OBJsize ? (obj.tileIndex & 0xFE) : obj.tileIndex;
         u8 tileDataYOffset = (LY + 16 - obj.Yposition) * 2;
         u16 tileDataAddress = 0x8000 + (tileIndex * 16) + tileDataYOffset;
@@ -390,7 +388,7 @@ auto gb::PPU::renderSprites() -> void
                 continue;
 
             PPU::Pixel paletteColor = greenShadesRGBPalette[colorPixel & 0b11];
-            pixelsBuffer[bufferIndex] = /*std::move(*/paletteColor/*)*/;
+            pixelsBuffer[bufferIndex] = std::move(paletteColor);
         }
     }
 }
