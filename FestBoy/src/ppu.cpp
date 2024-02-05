@@ -177,10 +177,11 @@ auto gb::PPU::clock() -> void
             if (currentDot == 0)
             {
                 LCDStatus.ModeFlag = 2;
-                lastMode3Dot = 172 + 80 - 1;// Min number of dots is 168-174 according to different sources (172 placeholder for now)
-
-                scanlineOAMScanSearchRoutine();
+                lastMode3Dot = 172 + 80 - 1; // Min number of dots is 168-174 according to different sources (172 placeholder for now)
             }
+
+            if (currentDot == 79) // Checking for valid objects in the current scanline performed in the last cycle of mode 2
+                scanlineOAMScanSearchRoutine();
 
             //checkAndRaiseStatInterrupts();
         }
@@ -307,7 +308,7 @@ auto gb::PPU::renderBackground() -> void
             // (tileLine * 8 + tileY) * PIXELS_PER_LINE == LY * PIXELS_PER_LINE
             std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (tileIndex * 8 + pixelIndex);
             PPU::Pixel paletteColor = (LCDControl.BGWindEnablePriority) ? greenShadesRGBPalette[colorPixel & 0b11] : greenShadesRGBPalette[0];
-            pixelsBuffer[bufferIndex] = paletteColor;
+            pixelsBuffer[bufferIndex] = std::move(paletteColor);
 
             //printf("Writting pixel %d of tile %d. Line: %d - Dot: %d\n", pixelIndex, tileIndex, LY, (tileIndex * 8) + pixelIndex);
         }
@@ -350,11 +351,53 @@ auto gb::PPU::renderWindow() -> void
 
 auto gb::PPU::renderSprites() -> void
 {
+    for (int item = spritesFound - 1; item >= 0; item--)
+    {
+        const auto& obj = scanlineValidSprites[item];
+
+        /*if (obj.Xposition == 0 || obj.Xposition >= 168)
+            continue;*/
+
+        //if (obj.attributesFlags & 0x80)
+
+        u8 tileIndex = LCDControl.OBJsize ? (obj.tileIndex & 0xFE) : obj.tileIndex;
+        u8 tileDataYOffset = (LY + 16 - obj.Yposition) * 2;
+        u16 tileDataAddress = 0x8000 + (tileIndex * 16) + tileDataYOffset;
+        u8 lowByteTileData = read(tileDataAddress);
+        u8 highByteTileData = read(tileDataAddress + 1);
+
+        u8 initialPixelIndex = 0;
+        u8 finalPixelIndex = 8;
+
+        if ((obj.Xposition - 8) < 0)
+            initialPixelIndex = 8 - (obj.Xposition % 8);
+        else if (obj.Xposition >= 160)
+            finalPixelIndex = 8 - (obj.Xposition % 8);
+
+        for (int pixelIndex = initialPixelIndex; pixelIndex < finalPixelIndex; pixelIndex++)
+        {
+            u8 lowBit = (lowByteTileData >> (7 - pixelIndex)) & 1;
+            u8 highBit = (highByteTileData >> (7 - pixelIndex)) & 1;
+            u8 paletteColorIndex = ((highBit << 1) | lowBit) & 0b11;
+            u8 colorPixel = (((obj.attributesFlags & 0x10) ? obj1PaletteData : obj0PaletteData) >> (paletteColorIndex * 2)) & 0b11;
+
+            if (colorPixel == 0)
+                continue;
+
+            std::size_t bufferIndex = (LY * PIXELS_PER_LINE) + (obj.Xposition - 8 + pixelIndex);
+
+            if ((obj.attributesFlags & 0x80) && (pixelsBuffer[bufferIndex] != greenShadesRGBPalette[0]))
+                continue;
+
+            PPU::Pixel paletteColor = greenShadesRGBPalette[colorPixel & 0b11];
+            pixelsBuffer[bufferIndex] = /*std::move(*/paletteColor/*)*/;
+        }
+    }
 }
 
 auto gb::PPU::scanlineOAMScanSearchRoutine() -> void
 {
-    u8 spriteSize = 8 * (LCDControl.OBJsize * 2);
+    u8 spriteSize = 8 << LCDControl.OBJsize; // 8x8 (OBJsize is 0) or 8x16 (OBJsize is 1) sprites
     spritesFound = 0;
 
     for (const auto& objItem : OAM)
@@ -362,7 +405,8 @@ auto gb::PPU::scanlineOAMScanSearchRoutine() -> void
         if (spritesFound == 10)
             break;
 
-        if (((objItem.Yposition) >= LY) && (objItem.Yposition < (LY + 8)))
+        if ((objItem.Yposition <= (LY + 16)) && ((LY + 16) < (objItem.Yposition + spriteSize)))
+        //if (!(LY < objItem.Yposition - 16 || LY >= objItem.Yposition - 16 + spriteSize))
         {
             scanlineValidSprites[spritesFound++] = objItem;
         }

@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
         u64 endFrameTime = SDL_GetTicks64();
         int idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
         if (idleTime < 0) idleTime = 0;
-        printf("Sleeping for %d\n", (int)idleTime);
+        printf("Sleeping for %d secs\n", (int)idleTime);
         SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
