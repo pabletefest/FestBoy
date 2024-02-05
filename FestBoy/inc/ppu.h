@@ -25,6 +25,11 @@ namespace gb
             u8 R;
             u8 G;
             u8 B;
+
+            auto operator==(const Pixel& other) -> bool
+            {
+                return this->R == other.R && this->G == other.G && this->B == other.B;
+            }
         };
 
     public:

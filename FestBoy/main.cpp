@@ -83,6 +83,7 @@ int main(int argc, char* argv[])
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/blargg_tests/cpu_instrs/cpu_instrs.gb");
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/dmg-acid2.gb");
+    //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("tests/gejmboj.gb");
 
     //Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris.gb");
     Ref<gb::GamePak> cartridge = std::make_shared<gb::GamePak>("roms/Tetris V1.1.gb");
@@ -137,7 +138,9 @@ int main(int argc, char* argv[])
         //SDL_Delay(16);
 
         u64 endFrameTime = SDL_GetTicks64();
-        u64 idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
+        int idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
+        if (idleTime < 0) idleTime = 0;
+        printf("Sleeping for %d\n", (int)idleTime);
         SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
