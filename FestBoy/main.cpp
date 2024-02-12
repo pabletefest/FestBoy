@@ -118,9 +118,68 @@ int main(int argc, char* argv[])
 
     SDL_Texture* gameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, GB_PIXELS_HEIGHT, GB_PIXELS_WIDTH);
 
-    while (true)
+    bool isRunning = true;
+    SDL_Event event;
+
+    while (isRunning)
     {
         u64 startFrameTime = SDL_GetTicks64();    
+
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                isRunning = false;
+            }
+            else if (event.type == SDL_KEYDOWN)
+            {
+                SDL_Keycode keyCode = event.key.keysym.sym;
+
+                switch (keyCode)
+                {
+                case SDLK_x: // A Button
+                    break;
+                case SDLK_z: // B Button
+                    break;
+                case SDLK_a: // SELECT Button
+                    break;
+                case SDLK_s: // START Button
+                    break;
+                case SDLK_UP: // D-PAD UP Button
+                    break;
+                case SDLK_DOWN: // D-PAD DOWN Button
+                    break;
+                case SDLK_LEFT: // D-PAD LEFT Button
+                    break;
+                case SDLK_RIGHT: // D-PAD RIGHT Button
+                    break;
+                }
+            }
+            else if (event.type == SDL_KEYUP)
+            {
+                SDL_Keycode keyCode = event.key.keysym.sym;
+
+                switch (keyCode)
+                {
+                case SDLK_x:
+                    break;
+                case SDLK_z:
+                    break;
+                case SDLK_a:
+                    break;
+                case SDLK_s:
+                    break;
+                case SDLK_UP:
+                    break;
+                case SDLK_DOWN:
+                    break;
+                case SDLK_LEFT:
+                    break;
+                case SDLK_RIGHT:
+                    break;
+                }
+            }
+        }
 
         do
         {
@@ -141,7 +200,7 @@ int main(int argc, char* argv[])
         int idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
         if (idleTime < 0) idleTime = 0;
         printf("Sleeping for %d secs\n", (int)idleTime);
-        SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
+        //SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
     // Always be sure to clean up
