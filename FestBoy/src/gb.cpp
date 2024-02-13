@@ -75,7 +75,26 @@ auto gb::GBConsole::read8(const u16& address) -> u8
         switch (address)
         {
         case 0xFF00:
-            return 0x0F; // TEMP
+            //return 0x0F; // TEMP
+            if ((joypadRegister & 0x30) == 0x30) // When non of the selection bits is 0, low nibble always returns 0xF
+                /*return (joypadRegister | 0x0F);*/
+            {
+                dataRead = (joypadRegister | 0x0F);
+            }
+            else if (!(joypadRegister & 0x20))
+            {
+                dataRead = ((joypadRegister & 0xF0) | controllerState.buttons);
+            }
+            else if (!(joypadRegister & 0x10))
+            {
+                dataRead = ((joypadRegister & 0xF0) | controllerState.dpad);
+            }
+            else if (!(joypadRegister & 0x30))
+            {
+                dataRead = ((joypadRegister & 0xF0) | (controllerState.buttons & controllerState.dpad));
+            }
+
+            //dataRead = joypadRegister;
             break;
         case 0xFF01:
             dataRead = SB_register;
@@ -204,6 +223,9 @@ auto gb::GBConsole::write8(const u16& address, const u8& data) -> void
     {
         switch (address)
         {
+        case 0xFF00:
+            joypadRegister = (data & 0x30) | (joypadRegister & 0xCF); // Lower nibble is read-only and upper 2 bits are always 1
+            break;
         case 0xFF01:
             SB_register = data;
             break;

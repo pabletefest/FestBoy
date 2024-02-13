@@ -112,5 +112,17 @@ namespace gb
 
             u8 reg;
         }IF;
+
+        u8 joypadRegister = 0xCF;
+
+        union
+        {
+            struct
+            {
+                u8 buttons : 4;
+                u8 dpad : 4;
+            };
+            u8 _ = 0xFF;
+        }controllerState;
     };
 }

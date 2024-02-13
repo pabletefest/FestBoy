@@ -138,20 +138,36 @@ int main(int argc, char* argv[])
                 switch (keyCode)
                 {
                 case SDLK_x: // A Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons &= ~0x1;
                     break;
                 case SDLK_z: // B Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons &= ~0x2;
                     break;
                 case SDLK_a: // SELECT Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons &= ~0x4;
                     break;
                 case SDLK_s: // START Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons &= ~0x8;
                     break;
                 case SDLK_UP: // D-PAD UP Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad &= ~0x4;
                     break;
                 case SDLK_DOWN: // D-PAD DOWN Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad &= ~0x8;
                     break;
                 case SDLK_LEFT: // D-PAD LEFT Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad &= ~0x2;
                     break;
                 case SDLK_RIGHT: // D-PAD RIGHT Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad &= ~0x1;
                     break;
                 }
             }
@@ -161,21 +177,37 @@ int main(int argc, char* argv[])
 
                 switch (keyCode)
                 {
-                case SDLK_x:
+                case SDLK_x: // A Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons |= 0x1;
                     break;
-                case SDLK_z:
+                case SDLK_z: // B Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons |= 0x2;
                     break;
-                case SDLK_a:
+                case SDLK_a: // SELECT Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons |= 0x4;
                     break;
-                case SDLK_s:
+                case SDLK_s: // START Button
+                    //if (!(emulator.joypadRegister & 0x20))
+                        emulator.controllerState.buttons |= 0x8;
                     break;
-                case SDLK_UP:
+                case SDLK_UP: // D-PAD UP Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad |= 0x4;
                     break;
-                case SDLK_DOWN:
+                case SDLK_DOWN: // D-PAD DOWN Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad |= 0x8;
                     break;
-                case SDLK_LEFT:
+                case SDLK_LEFT: // D-PAD LEFT Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad |= 0x2;
                     break;
-                case SDLK_RIGHT:
+                case SDLK_RIGHT: // D-PAD RIGHT Button
+                    //if (!(emulator.joypadRegister & 0x10))
+                        emulator.controllerState.dpad |= 0x1;
                     break;
                 }
             }
@@ -199,8 +231,8 @@ int main(int argc, char* argv[])
         u64 endFrameTime = SDL_GetTicks64();
         int idleTime = 16 - (endFrameTime - startFrameTime); // No floating number so rounded to 16ms per frame
         if (idleTime < 0) idleTime = 0;
-        printf("Sleeping for %d secs\n", (int)idleTime);
-        //SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
+        //printf("Sleeping for %d secs\n", (int)idleTime);
+        SDL_Delay(static_cast<u32>(idleTime)); // Sleep the remaining time of the frame after being calculated and drawn to the screen
     }
 
     // Always be sure to clean up
