@@ -362,7 +362,7 @@ auto gb::GBConsole::clock() -> void
         {
             isHaltMode = false;
 
-            printf("HALT mode leaved, IME is %d\n", IME);
+            //printf("HALT mode leaved, IME is %d\n", IME);
 
             //if (IME)
             //{

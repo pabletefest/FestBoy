@@ -116,6 +116,9 @@ auto gb::PPU::write(u16 address, u8 data) -> void
         {
         case 0xFF40:
             LCDControl.reg = data;
+
+            if (LCDControl.LCDenable)
+                LCDStatus.ModeFlag = 2;
             break;
         case 0xFF41:
             LCDStatus.reg |= (data & 0x78); // Only bits 6, 5, 4, and 3 are writable
