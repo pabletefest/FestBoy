@@ -1,6 +1,4 @@
 # FestBoy
-=========
-
 A cycle-accurate Game Boy Emulator currently under development written with C++ and CMake.
 
 ![screenshot1](docs/Tetris_Game-FestBoy.png)
