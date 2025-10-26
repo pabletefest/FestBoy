@@ -1,4 +1,4 @@
-# FestBoy
+# FestBoy  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 <img width="612" height="408" alt="FestBoy logo transparent" src="https://github.com/user-attachments/assets/d61bba0e-6e4b-4ee5-ab68-ebc6299a48e5" />
 
