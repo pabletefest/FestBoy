@@ -3,6 +3,7 @@
 <img width="612" height="408" alt="FestBoy logo transparent" src="https://github.com/user-attachments/assets/d61bba0e-6e4b-4ee5-ab68-ebc6299a48e5" />
 
 A cycle-accurate Game Boy Emulator currently under development written with C++ and CMake.
+This project served as a base project for a Master's thesis project with educational purpuses only.
 
 ## Screenshot
 ![screenshot1](docs/Tetris_Game-FestBoy.png)
